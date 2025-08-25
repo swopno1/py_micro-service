@@ -1,0 +1,639 @@
+2025-08-22 06:56:08,386 - api.main - INFO - Background task: Starting EOD data fetch.
+2025-08-22 06:56:24,476 - yfinance - ERROR - HTTP Error 404: 
+2025-08-22 06:56:25,707 - yfinance - ERROR - $TWTR: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:56:25,707 - api.fetcher - WARNING - No history data for symbol TWTR
+2025-08-22 06:56:30,162 - yfinance - ERROR - $ZI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:56:30,163 - api.fetcher - WARNING - No history data for symbol ZI
+2025-08-22 06:56:38,992 - yfinance - ERROR - $BAMXF: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:56:38,993 - api.fetcher - WARNING - No history data for symbol BAMXF
+2025-08-22 06:56:39,300 - yfinance - ERROR - $PMMAF: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:56:39,300 - api.fetcher - WARNING - No history data for symbol PMMAF
+2025-08-22 06:56:40,714 - yfinance - ERROR - $JWN: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:56:40,714 - api.fetcher - WARNING - No history data for symbol JWN
+2025-08-22 06:56:42,178 - yfinance - ERROR - $SQ: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:56:42,178 - api.fetcher - WARNING - No history data for symbol SQ
+2025-08-22 06:56:43,876 - yfinance - ERROR - $ABRT: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:56:43,876 - api.fetcher - WARNING - No history data for symbol ABRT
+2025-08-22 06:56:45,888 - yfinance - ERROR - $ACDX: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:56:45,889 - api.fetcher - WARNING - No history data for symbol ACDX
+2025-08-22 06:56:47,138 - yfinance - ERROR - $AFF: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:56:47,139 - api.fetcher - WARNING - No history data for symbol AFF
+2025-08-22 06:56:48,752 - yfinance - ERROR - $AFI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:56:48,753 - api.fetcher - WARNING - No history data for symbol AFI
+2025-08-22 06:56:49,030 - yfinance - ERROR - $AFX: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:56:49,030 - api.fetcher - WARNING - No history data for symbol AFX
+2025-08-22 06:56:50,389 - yfinance - ERROR - $AGC: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:56:50,389 - api.fetcher - WARNING - No history data for symbol AGC
+2025-08-22 06:56:51,830 - yfinance - ERROR - $AGN: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:56:51,830 - api.fetcher - WARNING - No history data for symbol AGN
+2025-08-22 06:56:53,829 - yfinance - ERROR - $AIAI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:56:53,831 - api.fetcher - WARNING - No history data for symbol AIAI
+2025-08-22 06:56:55,508 - yfinance - ERROR - $AIC: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:56:55,508 - api.fetcher - WARNING - No history data for symbol AIC
+2025-08-22 06:56:55,795 - yfinance - ERROR - $AICO: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:56:55,795 - api.fetcher - WARNING - No history data for symbol AICO
+2025-08-22 06:56:57,144 - yfinance - ERROR - $CUAU: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:56:57,145 - api.fetcher - WARNING - No history data for symbol CUAU
+2025-08-22 06:56:57,467 - yfinance - ERROR - $CUH: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:56:57,467 - api.fetcher - WARNING - No history data for symbol CUH
+2025-08-22 06:56:58,774 - yfinance - ERROR - $CULT: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:56:58,774 - api.fetcher - WARNING - No history data for symbol CULT
+2025-08-22 06:57:00,759 - yfinance - ERROR - $CUPA: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:00,761 - api.fetcher - WARNING - No history data for symbol CUPA
+2025-08-22 06:57:01,368 - yfinance - ERROR - $CVGR: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:01,368 - api.fetcher - WARNING - No history data for symbol CVGR
+2025-08-22 06:57:01,641 - yfinance - ERROR - $CXC: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:01,642 - api.fetcher - WARNING - No history data for symbol CXC
+2025-08-22 06:57:03,481 - yfinance - ERROR - $CXXI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:03,482 - api.fetcher - WARNING - No history data for symbol CXXI
+2025-08-22 06:57:05,536 - yfinance - ERROR - $DCNN: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:05,536 - api.fetcher - WARNING - No history data for symbol DCNN
+2025-08-22 06:57:06,927 - yfinance - ERROR - $DCSI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:06,927 - api.fetcher - WARNING - No history data for symbol DCSI
+2025-08-22 06:57:07,214 - yfinance - ERROR - $DMC: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:07,214 - api.fetcher - WARNING - No history data for symbol DMC
+2025-08-22 06:57:07,607 - yfinance - ERROR - $DMED: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:07,607 - api.fetcher - WARNING - No history data for symbol DMED
+2025-08-22 06:57:08,532 - yfinance - ERROR - $DOSE: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:08,533 - api.fetcher - WARNING - No history data for symbol DOSE
+2025-08-22 06:57:10,868 - yfinance - ERROR - $AIML: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:10,868 - api.fetcher - WARNING - No history data for symbol AIML
+2025-08-22 06:57:11,144 - yfinance - ERROR - $AJN: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:11,144 - api.fetcher - WARNING - No history data for symbol AJN
+2025-08-22 06:57:12,795 - yfinance - ERROR - $ALMA: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:12,796 - api.fetcher - WARNING - No history data for symbol ALMA
+2025-08-22 06:57:14,042 - yfinance - ERROR - $AMMP: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:14,044 - api.fetcher - WARNING - No history data for symbol AMMP
+2025-08-22 06:57:14,312 - yfinance - ERROR - $AMQ: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:14,313 - api.fetcher - WARNING - No history data for symbol AMQ
+2025-08-22 06:57:15,568 - yfinance - ERROR - $ANON: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:15,569 - api.fetcher - WARNING - No history data for symbol ANON
+2025-08-22 06:57:17,203 - yfinance - ERROR - $CCC: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:17,203 - api.fetcher - WARNING - No history data for symbol CCC
+2025-08-22 06:57:17,760 - yfinance - ERROR - $HML: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:17,760 - api.fetcher - WARNING - No history data for symbol HML
+2025-08-22 06:57:19,261 - yfinance - ERROR - $APLV: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:19,261 - api.fetcher - WARNING - No history data for symbol APLV
+2025-08-22 06:57:21,094 - yfinance - ERROR - $ARGO: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:21,095 - api.fetcher - WARNING - No history data for symbol ARGO
+2025-08-22 06:57:23,452 - yfinance - ERROR - $HPSS: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:23,452 - api.fetcher - WARNING - No history data for symbol HPSS
+2025-08-22 06:57:23,756 - yfinance - ERROR - $HRK: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:23,756 - api.fetcher - WARNING - No history data for symbol HRK
+2025-08-22 06:57:24,100 - yfinance - ERROR - $HRO: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:24,101 - api.fetcher - WARNING - No history data for symbol HRO
+2025-08-22 06:57:25,610 - yfinance - ERROR - $HUNT: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:25,610 - api.fetcher - WARNING - No history data for symbol HUNT
+2025-08-22 06:57:25,896 - yfinance - ERROR - $HVW: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:25,896 - api.fetcher - WARNING - No history data for symbol HVW
+2025-08-22 06:57:26,167 - yfinance - ERROR - $HWG: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:26,167 - api.fetcher - WARNING - No history data for symbol HWG
+2025-08-22 06:57:27,760 - yfinance - ERROR - $HWTN: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:27,760 - api.fetcher - WARNING - No history data for symbol HWTN
+2025-08-22 06:57:29,080 - yfinance - ERROR - $HYTN: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:29,080 - api.fetcher - WARNING - No history data for symbol HYTN
+2025-08-22 06:57:29,352 - yfinance - ERROR - $HZ: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:29,352 - api.fetcher - WARNING - No history data for symbol HZ
+2025-08-22 06:57:29,631 - yfinance - ERROR - $IAN: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:29,631 - api.fetcher - WARNING - No history data for symbol IAN
+2025-08-22 06:57:29,910 - yfinance - ERROR - $ICS: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:29,911 - api.fetcher - WARNING - No history data for symbol ICS
+2025-08-22 06:57:30,189 - yfinance - ERROR - $IDK: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:30,190 - api.fetcher - WARNING - No history data for symbol IDK
+2025-08-22 06:57:30,449 - yfinance - ERROR - $IME: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:30,450 - api.fetcher - WARNING - No history data for symbol IME
+2025-08-22 06:57:30,726 - yfinance - ERROR - $INNO: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:30,726 - api.fetcher - WARNING - No history data for symbol INNO
+2025-08-22 06:57:31,899 - yfinance - ERROR - $IRV: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:31,900 - api.fetcher - WARNING - No history data for symbol IRV
+2025-08-22 06:57:33,408 - yfinance - ERROR - $ISFT: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:33,408 - api.fetcher - WARNING - No history data for symbol ISFT
+2025-08-22 06:57:33,679 - yfinance - ERROR - $IWIN: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:33,680 - api.fetcher - WARNING - No history data for symbol IWIN
+2025-08-22 06:57:33,962 - yfinance - ERROR - $IZO: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:33,963 - api.fetcher - WARNING - No history data for symbol IZO
+2025-08-22 06:57:34,263 - yfinance - ERROR - $JBR: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:34,264 - api.fetcher - WARNING - No history data for symbol JBR
+2025-08-22 06:57:34,554 - yfinance - ERROR - $GEMS: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:34,554 - api.fetcher - WARNING - No history data for symbol GEMS
+2025-08-22 06:57:35,843 - yfinance - ERROR - $GET: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:35,843 - api.fetcher - WARNING - No history data for symbol GET
+2025-08-22 06:57:37,091 - yfinance - ERROR - $GFCO: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:37,091 - api.fetcher - WARNING - No history data for symbol GFCO
+2025-08-22 06:57:37,699 - yfinance - ERROR - $ARS: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:37,700 - api.fetcher - WARNING - No history data for symbol ARS
+2025-08-22 06:57:39,437 - yfinance - ERROR - $ARWY: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:39,438 - api.fetcher - WARNING - No history data for symbol ARWY
+2025-08-22 06:57:39,722 - yfinance - ERROR - $ASE: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:39,722 - api.fetcher - WARNING - No history data for symbol ASE
+2025-08-22 06:57:41,088 - yfinance - ERROR - $ASEP: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:41,088 - api.fetcher - WARNING - No history data for symbol ASEP
+2025-08-22 06:57:42,491 - yfinance - ERROR - $ASHL: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:42,491 - api.fetcher - WARNING - No history data for symbol ASHL
+2025-08-22 06:57:45,155 - yfinance - ERROR - $ATMY: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:45,155 - api.fetcher - WARNING - No history data for symbol ATMY
+2025-08-22 06:57:45,436 - yfinance - ERROR - $AUAG: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:45,436 - api.fetcher - WARNING - No history data for symbol AUAG
+2025-08-22 06:57:46,904 - yfinance - ERROR - $AUCU: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:46,905 - api.fetcher - WARNING - No history data for symbol AUCU
+2025-08-22 06:57:48,231 - yfinance - ERROR - $AUEX: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:48,232 - api.fetcher - WARNING - No history data for symbol AUEX
+2025-08-22 06:57:48,504 - yfinance - ERROR - $AUMC: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:48,505 - api.fetcher - WARNING - No history data for symbol AUMC
+2025-08-22 06:57:49,860 - yfinance - ERROR - $AUOZ: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:49,860 - api.fetcher - WARNING - No history data for symbol AUOZ
+2025-08-22 06:57:51,211 - yfinance - ERROR - $AVM-X: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:51,211 - api.fetcher - WARNING - No history data for symbol AVM-X
+2025-08-22 06:57:52,400 - yfinance - ERROR - $AWLI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:52,400 - api.fetcher - WARNING - No history data for symbol AWLI
+2025-08-22 06:57:54,688 - yfinance - ERROR - $AYR-A: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:54,689 - api.fetcher - WARNING - No history data for symbol AYR-A
+2025-08-22 06:57:56,159 - yfinance - ERROR - $AYUR: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:56,159 - api.fetcher - WARNING - No history data for symbol AYUR
+2025-08-22 06:57:56,449 - yfinance - ERROR - $BAMM: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:56,449 - api.fetcher - WARNING - No history data for symbol BAMM
+2025-08-22 06:57:57,960 - yfinance - ERROR - $BATX: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:57,960 - api.fetcher - WARNING - No history data for symbol BATX
+2025-08-22 06:57:58,224 - yfinance - ERROR - $BBM: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:58,224 - api.fetcher - WARNING - No history data for symbol BBM
+2025-08-22 06:57:59,408 - yfinance - ERROR - $BDR: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:57:59,408 - api.fetcher - WARNING - No history data for symbol BDR
+2025-08-22 06:57:59,680 - yfinance - ERROR - $MGW: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:59,680 - api.fetcher - WARNING - No history data for symbol MGW
+2025-08-22 06:57:59,942 - yfinance - ERROR - $BEE: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:57:59,942 - api.fetcher - WARNING - No history data for symbol BEE
+2025-08-22 06:58:00,623 - yfinance - ERROR - $BFG: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:58:00,623 - api.fetcher - WARNING - No history data for symbol BFG
+2025-08-22 06:58:01,813 - yfinance - ERROR - $MILI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:58:01,814 - api.fetcher - WARNING - No history data for symbol MILI
+2025-08-22 06:58:03,090 - yfinance - ERROR - $MIRL: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:58:03,090 - api.fetcher - WARNING - No history data for symbol MIRL
+2025-08-22 06:58:03,368 - yfinance - ERROR - $MIS: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:58:03,368 - api.fetcher - WARNING - No history data for symbol MIS
+2025-08-22 06:58:05,149 - yfinance - ERROR - $MJEM: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:58:05,149 - api.fetcher - WARNING - No history data for symbol MJEM
+2025-08-22 06:58:07,595 - yfinance - ERROR - $MJRX: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:58:07,595 - api.fetcher - WARNING - No history data for symbol MJRX
+2025-08-22 06:58:08,805 - yfinance - ERROR - $MLCL: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:58:08,806 - api.fetcher - WARNING - No history data for symbol MLCL
+2025-08-22 06:58:09,095 - yfinance - ERROR - $MLKM: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:58:09,095 - api.fetcher - WARNING - No history data for symbol MLKM
+2025-08-22 06:58:10,328 - yfinance - ERROR - $MMET: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:58:10,328 - api.fetcher - WARNING - No history data for symbol MMET
+2025-08-22 06:58:10,885 - yfinance - ERROR - $MNG: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:58:10,886 - api.fetcher - WARNING - No history data for symbol MNG
+2025-08-22 06:58:12,196 - yfinance - ERROR - $MOC: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:58:12,196 - api.fetcher - WARNING - No history data for symbol MOC
+2025-08-22 06:58:13,640 - yfinance - ERROR - $MOLT: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:58:13,656 - api.fetcher - WARNING - No history data for symbol MOLT
+2025-08-22 06:58:15,219 - yfinance - ERROR - $MOOO: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:58:15,220 - api.fetcher - WARNING - No history data for symbol MOOO
+2025-08-22 06:58:15,761 - yfinance - ERROR - $MOSS: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:58:15,762 - api.fetcher - WARNING - No history data for symbol MOSS
+2025-08-22 06:58:17,570 - yfinance - ERROR - $MTLC: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:58:17,570 - api.fetcher - WARNING - No history data for symbol MTLC
+2025-08-22 06:58:18,859 - yfinance - ERROR - $MUSK: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:58:18,859 - api.fetcher - WARNING - No history data for symbol MUSK
+2025-08-22 06:58:20,020 - yfinance - ERROR - $MUZU: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:58:20,020 - api.fetcher - WARNING - No history data for symbol MUZU
+2025-08-22 06:58:21,191 - yfinance - ERROR - $MVMD: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:58:21,192 - api.fetcher - WARNING - No history data for symbol MVMD
+2025-08-22 06:58:21,503 - yfinance - ERROR - $MY: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:58:21,504 - api.fetcher - WARNING - No history data for symbol MY
+2025-08-22 06:58:21,777 - yfinance - ERROR - $MYCO: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:58:21,777 - api.fetcher - WARNING - No history data for symbol MYCO
+2025-08-22 06:58:22,998 - yfinance - ERROR - $QQ: possibly delisted; no price data found  (period=1d)
+2025-08-22 06:58:22,999 - api.fetcher - WARNING - No history data for symbol QQ
+2025-08-22 06:58:24,565 - yfinance - ERROR - $RAD: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 06:58:24,565 - api.fetcher - WARNING - No history data for symbol RAD
+2025-08-22 07:07:07,952 - api.main - INFO - Background task: Starting EOD data fetch.
+2025-08-22 07:07:19,021 - yfinance - ERROR - HTTP Error 404: 
+2025-08-22 07:07:20,181 - yfinance - ERROR - $TWTR: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 07:07:20,181 - api.fetcher - WARNING - No history data for symbol TWTR
+2025-08-22 07:07:23,244 - yfinance - ERROR - $ZI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 07:07:23,245 - api.fetcher - WARNING - No history data for symbol ZI
+2025-08-22 07:07:27,276 - yfinance - ERROR - $BAMXF: possibly delisted; no price data found  (period=1d)
+2025-08-22 07:07:27,276 - api.fetcher - WARNING - No history data for symbol BAMXF
+2025-08-22 07:07:27,423 - yfinance - ERROR - $PMMAF: possibly delisted; no price data found  (period=1d)
+2025-08-22 07:07:27,423 - api.fetcher - WARNING - No history data for symbol PMMAF
+2025-08-22 07:07:28,808 - yfinance - ERROR - $JWN: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 07:07:28,809 - api.fetcher - WARNING - No history data for symbol JWN
+2025-08-22 07:07:30,168 - yfinance - ERROR - $SQ: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 07:07:30,168 - api.fetcher - WARNING - No history data for symbol SQ
+2025-08-22 07:07:31,551 - yfinance - ERROR - $ABRT: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 07:07:31,551 - api.fetcher - WARNING - No history data for symbol ABRT
+2025-08-22 07:07:32,974 - yfinance - ERROR - $ACDX: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 07:07:32,975 - api.fetcher - WARNING - No history data for symbol ACDX
+2025-08-22 07:07:33,640 - yfinance - ERROR - $AFF: possibly delisted; no price data found  (period=1d)
+2025-08-22 07:07:33,641 - api.fetcher - WARNING - No history data for symbol AFF
+2025-08-22 07:07:35,391 - yfinance - ERROR - $AFI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 07:07:35,392 - api.fetcher - WARNING - No history data for symbol AFI
+2025-08-22 07:07:35,641 - yfinance - ERROR - $AFX: possibly delisted; no price data found  (period=1d)
+2025-08-22 07:07:35,641 - api.fetcher - WARNING - No history data for symbol AFX
+2025-08-22 07:07:37,235 - yfinance - ERROR - $AGC: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 07:07:37,235 - api.fetcher - WARNING - No history data for symbol AGC
+2025-08-22 07:10:14,531 - httpx - INFO - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2025-08-22 07:10:14,534 - httpx - INFO - HTTP Request: GET http://testserver/stock/AAPL "HTTP/1.1 403 Forbidden"
+2025-08-22 07:10:17,401 - httpx - INFO - HTTP Request: GET http://testserver/stock/NOSYMBOL "HTTP/1.1 404 Not Found"
+2025-08-22 07:10:17,410 - httpx - INFO - HTTP Request: GET http://testserver/stock/AAPL "HTTP/1.1 200 OK"
+2025-08-22 07:12:27,190 - api.main - INFO - Background task: Starting EOD data fetch.
+2025-08-22 07:12:41,270 - yfinance - ERROR - HTTP Error 404: 
+2025-08-22 07:12:42,276 - yfinance - ERROR - $TWTR: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 07:12:42,276 - api.fetcher - WARNING - No history data for symbol TWTR
+2025-08-22 07:12:45,421 - yfinance - ERROR - $ZI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 07:12:45,421 - api.fetcher - WARNING - No history data for symbol ZI
+2025-08-22 07:12:50,517 - yfinance - ERROR - $BAMXF: possibly delisted; no price data found  (period=1d)
+2025-08-22 07:12:50,517 - api.fetcher - WARNING - No history data for symbol BAMXF
+2025-08-22 07:12:50,731 - yfinance - ERROR - $PMMAF: possibly delisted; no price data found  (period=1d)
+2025-08-22 07:12:50,731 - api.fetcher - WARNING - No history data for symbol PMMAF
+2025-08-22 07:12:51,805 - yfinance - ERROR - $JWN: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 07:12:51,805 - api.fetcher - WARNING - No history data for symbol JWN
+2025-08-22 07:12:52,716 - yfinance - ERROR - $SQ: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 07:12:52,716 - api.fetcher - WARNING - No history data for symbol SQ
+2025-08-22 07:12:54,386 - yfinance - ERROR - $ABRT: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 07:12:54,387 - api.fetcher - WARNING - No history data for symbol ABRT
+2025-08-22 07:12:55,703 - yfinance - ERROR - $ACDX: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 07:12:55,703 - api.fetcher - WARNING - No history data for symbol ACDX
+2025-08-22 07:14:08,139 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-08-22 07:14:08,140 - apscheduler.scheduler - INFO - Added job "fetch_and_store_eod_data" to job store "default"
+2025-08-22 07:14:08,140 - apscheduler.scheduler - INFO - Scheduler started
+2025-08-22 07:14:08,140 - api.main - INFO - Scheduler started. EOD fetch job scheduled.
+2025-08-22 07:16:13,755 - api.main - INFO - Background task: Starting EOD data fetch.
+2025-08-22 07:16:30,144 - yfinance - ERROR - HTTP Error 404: 
+2025-08-22 07:16:31,895 - yfinance - ERROR - $TWTR: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 07:16:31,896 - api.fetcher - WARNING - No history data for symbol TWTR
+2025-08-22 07:16:37,110 - yfinance - ERROR - $ZI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-22 07:16:37,110 - api.fetcher - WARNING - No history data for symbol ZI
+2025-08-26 03:58:42,644 - httpx - INFO - HTTP Request: GET http://testserver/ "HTTP/1.1 200 OK"
+2025-08-26 03:58:42,646 - httpx - INFO - HTTP Request: GET http://testserver/stock/AAPL "HTTP/1.1 403 Forbidden"
+2025-08-26 03:58:46,090 - httpx - INFO - HTTP Request: GET http://testserver/stock/NOSYMBOL "HTTP/1.1 404 Not Found"
+2025-08-26 03:58:46,098 - httpx - INFO - HTTP Request: GET http://testserver/stock/AAPL "HTTP/1.1 200 OK"
+2025-08-26 04:01:12,554 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-08-26 04:01:12,555 - apscheduler.scheduler - INFO - Added job "fetch_and_store_eod_data" to job store "default"
+2025-08-26 04:01:12,555 - apscheduler.scheduler - INFO - Scheduler started
+2025-08-26 04:01:12,555 - api.main - INFO - Scheduler started. EOD fetch job scheduled.
+2025-08-26 04:02:33,308 - api.main - INFO - Background task: Starting EOD data fetch.
+2025-08-26 04:02:36,624 - api.main - INFO - Background task: Starting EOD data fetch.
+2025-08-26 04:02:40,599 - yfinance - ERROR - HTTP Error 404: 
+2025-08-26 04:02:41,324 - yfinance - ERROR - $TWTR: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:02:41,325 - api.fetcher - WARNING - No history data for symbol TWTR
+2025-08-26 04:02:43,461 - yfinance - ERROR - $TWTR: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:02:43,462 - api.fetcher - WARNING - No history data for symbol TWTR
+2025-08-26 04:02:43,549 - yfinance - ERROR - $ZI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:02:43,549 - api.fetcher - WARNING - No history data for symbol ZI
+2025-08-26 04:02:44,394 - yfinance - ERROR - $ZI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:02:44,394 - api.fetcher - WARNING - No history data for symbol ZI
+2025-08-26 04:02:46,738 - yfinance - ERROR - $BAMXF: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:02:46,739 - api.fetcher - WARNING - No history data for symbol BAMXF
+2025-08-26 04:02:46,972 - yfinance - ERROR - $PMMAF: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:02:46,972 - api.fetcher - WARNING - No history data for symbol PMMAF
+2025-08-26 04:02:47,642 - yfinance - ERROR - $BAMXF: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:02:47,642 - api.fetcher - WARNING - No history data for symbol BAMXF
+2025-08-26 04:02:48,059 - yfinance - ERROR - $JWN: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:02:48,060 - api.fetcher - WARNING - No history data for symbol JWN
+2025-08-26 04:02:48,103 - yfinance - ERROR - $PMMAF: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:02:48,104 - api.fetcher - WARNING - No history data for symbol PMMAF
+2025-08-26 04:02:48,610 - yfinance - ERROR - $JWN: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:02:48,610 - api.fetcher - WARNING - No history data for symbol JWN
+2025-08-26 04:02:49,588 - yfinance - ERROR - $SQ: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:02:49,588 - api.fetcher - WARNING - No history data for symbol SQ
+2025-08-26 04:02:49,610 - yfinance - ERROR - $SQ: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:02:49,610 - api.fetcher - WARNING - No history data for symbol SQ
+2025-08-26 04:02:52,780 - yfinance - ERROR - $ABRT: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:02:52,780 - api.fetcher - WARNING - No history data for symbol ABRT
+2025-08-26 04:02:52,795 - yfinance - ERROR - $ABRT: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:02:52,796 - api.fetcher - WARNING - No history data for symbol ABRT
+2025-08-26 04:02:53,863 - yfinance - ERROR - $ACDX: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:02:53,864 - api.fetcher - WARNING - No history data for symbol ACDX
+2025-08-26 04:02:53,881 - yfinance - ERROR - $ACDX: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:02:53,881 - api.fetcher - WARNING - No history data for symbol ACDX
+2025-08-26 04:02:56,994 - yfinance - ERROR - $AFF: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:02:56,994 - api.fetcher - WARNING - No history data for symbol AFF
+2025-08-26 04:02:57,147 - yfinance - ERROR - $AFF: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:02:57,147 - api.fetcher - WARNING - No history data for symbol AFF
+2025-08-26 04:02:57,984 - yfinance - ERROR - $AFI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:02:57,984 - api.fetcher - WARNING - No history data for symbol AFI
+2025-08-26 04:02:58,619 - yfinance - ERROR - $AFI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:02:58,619 - api.fetcher - WARNING - No history data for symbol AFI
+2025-08-26 04:02:58,989 - yfinance - ERROR - $AFX: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:02:58,990 - api.fetcher - WARNING - No history data for symbol AFX
+2025-08-26 04:02:59,666 - yfinance - ERROR - $AFX: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:02:59,666 - api.fetcher - WARNING - No history data for symbol AFX
+2025-08-26 04:03:00,057 - yfinance - ERROR - $AGC: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:00,057 - api.fetcher - WARNING - No history data for symbol AGC
+2025-08-26 04:03:00,565 - yfinance - ERROR - $AGC: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:00,566 - api.fetcher - WARNING - No history data for symbol AGC
+2025-08-26 04:03:02,127 - yfinance - ERROR - $AGN: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:02,127 - api.fetcher - WARNING - No history data for symbol AGN
+2025-08-26 04:03:02,473 - yfinance - ERROR - $AGN: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:02,473 - api.fetcher - WARNING - No history data for symbol AGN
+2025-08-26 04:03:03,739 - yfinance - ERROR - $AIAI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:03,739 - api.fetcher - WARNING - No history data for symbol AIAI
+2025-08-26 04:03:04,134 - yfinance - ERROR - $AIAI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:04,134 - api.fetcher - WARNING - No history data for symbol AIAI
+2025-08-26 04:03:05,364 - yfinance - ERROR - $AIC: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:05,365 - api.fetcher - WARNING - No history data for symbol AIC
+2025-08-26 04:03:05,376 - yfinance - ERROR - $AIC: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:05,376 - api.fetcher - WARNING - No history data for symbol AIC
+2025-08-26 04:03:05,497 - yfinance - ERROR - $AICO: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:05,497 - api.fetcher - WARNING - No history data for symbol AICO
+2025-08-26 04:03:05,575 - yfinance - ERROR - $AICO: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:05,575 - api.fetcher - WARNING - No history data for symbol AICO
+2025-08-26 04:03:06,699 - yfinance - ERROR - $CUAU: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:06,699 - api.fetcher - WARNING - No history data for symbol CUAU
+2025-08-26 04:03:06,715 - yfinance - ERROR - $CUAU: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:06,715 - api.fetcher - WARNING - No history data for symbol CUAU
+2025-08-26 04:03:06,832 - yfinance - ERROR - $CUH: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:06,832 - api.fetcher - WARNING - No history data for symbol CUH
+2025-08-26 04:03:06,901 - yfinance - ERROR - $CUH: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:06,901 - api.fetcher - WARNING - No history data for symbol CUH
+2025-08-26 04:03:07,870 - yfinance - ERROR - $CULT: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:07,871 - api.fetcher - WARNING - No history data for symbol CULT
+2025-08-26 04:03:07,880 - yfinance - ERROR - $CULT: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:07,880 - api.fetcher - WARNING - No history data for symbol CULT
+2025-08-26 04:03:08,929 - yfinance - ERROR - $CUPA: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:08,929 - api.fetcher - WARNING - No history data for symbol CUPA
+2025-08-26 04:03:09,017 - yfinance - ERROR - $CUPA: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:09,017 - api.fetcher - WARNING - No history data for symbol CUPA
+2025-08-26 04:03:09,167 - yfinance - ERROR - $CVGR: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:09,167 - api.fetcher - WARNING - No history data for symbol CVGR
+2025-08-26 04:03:09,285 - yfinance - ERROR - $CXC: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:09,285 - api.fetcher - WARNING - No history data for symbol CXC
+2025-08-26 04:03:09,438 - yfinance - ERROR - $CVGR: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:09,439 - api.fetcher - WARNING - No history data for symbol CVGR
+2025-08-26 04:03:10,296 - yfinance - ERROR - $CXC: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:10,297 - api.fetcher - WARNING - No history data for symbol CXC
+2025-08-26 04:03:10,811 - yfinance - ERROR - $CXXI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:10,812 - api.fetcher - WARNING - No history data for symbol CXXI
+2025-08-26 04:03:11,016 - yfinance - ERROR - $CYBT: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:11,016 - api.fetcher - WARNING - No history data for symbol CYBT
+2025-08-26 04:03:11,426 - yfinance - ERROR - $CXXI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:11,426 - api.fetcher - WARNING - No history data for symbol CXXI
+2025-08-26 04:03:11,846 - yfinance - ERROR - $CYBT: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:11,847 - api.fetcher - WARNING - No history data for symbol CYBT
+2025-08-26 04:03:12,274 - yfinance - ERROR - $DCNN: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:12,275 - api.fetcher - WARNING - No history data for symbol DCNN
+2025-08-26 04:03:12,293 - yfinance - ERROR - $DCNN: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:12,293 - api.fetcher - WARNING - No history data for symbol DCNN
+2025-08-26 04:03:13,338 - yfinance - ERROR - $DCSI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:13,339 - api.fetcher - WARNING - No history data for symbol DCSI
+2025-08-26 04:03:13,355 - yfinance - ERROR - $DCSI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:13,355 - api.fetcher - WARNING - No history data for symbol DCSI
+2025-08-26 04:03:13,442 - yfinance - ERROR - $DMC: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:13,442 - api.fetcher - WARNING - No history data for symbol DMC
+2025-08-26 04:03:13,474 - yfinance - ERROR - $DMC: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:13,474 - api.fetcher - WARNING - No history data for symbol DMC
+2025-08-26 04:03:13,547 - yfinance - ERROR - $DMED: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:13,548 - api.fetcher - WARNING - No history data for symbol DMED
+2025-08-26 04:03:13,595 - yfinance - ERROR - $DMED: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:13,595 - api.fetcher - WARNING - No history data for symbol DMED
+2025-08-26 04:03:13,971 - yfinance - ERROR - $DOSE: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:13,971 - yfinance - ERROR - $DOSE: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:13,971 - api.fetcher - WARNING - No history data for symbol DOSE
+2025-08-26 04:03:13,971 - api.fetcher - WARNING - No history data for symbol DOSE
+2025-08-26 04:03:15,594 - yfinance - ERROR - $AIML: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:15,595 - api.fetcher - WARNING - No history data for symbol AIML
+2025-08-26 04:03:15,608 - yfinance - ERROR - $AIML: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:15,609 - api.fetcher - WARNING - No history data for symbol AIML
+2025-08-26 04:03:15,705 - yfinance - ERROR - $AJN: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:15,705 - api.fetcher - WARNING - No history data for symbol AJN
+2025-08-26 04:03:15,728 - yfinance - ERROR - $AJN: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:15,729 - api.fetcher - WARNING - No history data for symbol AJN
+2025-08-26 04:03:17,042 - yfinance - ERROR - $ALMA: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:17,043 - api.fetcher - WARNING - No history data for symbol ALMA
+2025-08-26 04:03:17,047 - yfinance - ERROR - $ALMA: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:17,047 - api.fetcher - WARNING - No history data for symbol ALMA
+2025-08-26 04:03:18,161 - yfinance - ERROR - $AMMP: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:18,163 - api.fetcher - WARNING - No history data for symbol AMMP
+2025-08-26 04:03:18,173 - yfinance - ERROR - $AMMP: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:18,173 - api.fetcher - WARNING - No history data for symbol AMMP
+2025-08-26 04:03:18,282 - yfinance - ERROR - $AMQ: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:18,282 - api.fetcher - WARNING - No history data for symbol AMQ
+2025-08-26 04:03:18,296 - yfinance - ERROR - $AMQ: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:18,296 - api.fetcher - WARNING - No history data for symbol AMQ
+2025-08-26 04:03:19,545 - yfinance - ERROR - $ANON: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:19,545 - api.fetcher - WARNING - No history data for symbol ANON
+2025-08-26 04:03:19,563 - yfinance - ERROR - $ANON: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:19,563 - api.fetcher - WARNING - No history data for symbol ANON
+2025-08-26 04:03:20,583 - yfinance - ERROR - $CCC: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:20,584 - api.fetcher - WARNING - No history data for symbol CCC
+2025-08-26 04:03:20,598 - yfinance - ERROR - $CCC: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:20,598 - api.fetcher - WARNING - No history data for symbol CCC
+2025-08-26 04:03:20,709 - yfinance - ERROR - $HML: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:20,710 - api.fetcher - WARNING - No history data for symbol HML
+2025-08-26 04:03:20,718 - yfinance - ERROR - $HML: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:20,718 - api.fetcher - WARNING - No history data for symbol HML
+2025-08-26 04:03:22,282 - yfinance - ERROR - $APLV: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:22,282 - api.fetcher - WARNING - No history data for symbol APLV
+2025-08-26 04:03:22,294 - yfinance - ERROR - $APLV: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:22,294 - api.fetcher - WARNING - No history data for symbol APLV
+2025-08-26 04:03:23,290 - yfinance - ERROR - $ARGO: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:23,290 - api.fetcher - WARNING - No history data for symbol ARGO
+2025-08-26 04:03:23,302 - yfinance - ERROR - $ARGO: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:23,303 - api.fetcher - WARNING - No history data for symbol ARGO
+2025-08-26 04:03:24,790 - yfinance - ERROR - $HPSS: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:24,790 - api.fetcher - WARNING - No history data for symbol HPSS
+2025-08-26 04:03:24,886 - yfinance - ERROR - $HPSS: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:24,886 - api.fetcher - WARNING - No history data for symbol HPSS
+2025-08-26 04:03:24,992 - yfinance - ERROR - $HRK: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:24,993 - api.fetcher - WARNING - No history data for symbol HRK
+2025-08-26 04:03:25,009 - yfinance - ERROR - $HRK: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:25,010 - api.fetcher - WARNING - No history data for symbol HRK
+2025-08-26 04:03:25,108 - yfinance - ERROR - $HRO: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:25,108 - api.fetcher - WARNING - No history data for symbol HRO
+2025-08-26 04:03:25,130 - yfinance - ERROR - $HRO: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:25,130 - api.fetcher - WARNING - No history data for symbol HRO
+2025-08-26 04:03:25,217 - yfinance - ERROR - $HTRC: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:25,217 - api.fetcher - WARNING - No history data for symbol HTRC
+2025-08-26 04:03:25,298 - yfinance - ERROR - $HTRC: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:25,299 - api.fetcher - WARNING - No history data for symbol HTRC
+2025-08-26 04:03:26,252 - yfinance - ERROR - $HUNT: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:26,254 - api.fetcher - WARNING - No history data for symbol HUNT
+2025-08-26 04:03:26,325 - yfinance - ERROR - $HUNT: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:26,326 - api.fetcher - WARNING - No history data for symbol HUNT
+2025-08-26 04:03:26,360 - yfinance - ERROR - $HVW: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:26,360 - api.fetcher - WARNING - No history data for symbol HVW
+2025-08-26 04:03:26,534 - yfinance - ERROR - $HWG: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:26,535 - yfinance - ERROR - $HVW: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:26,535 - api.fetcher - WARNING - No history data for symbol HWG
+2025-08-26 04:03:26,535 - api.fetcher - WARNING - No history data for symbol HVW
+2025-08-26 04:03:26,661 - yfinance - ERROR - $HWG: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:26,662 - api.fetcher - WARNING - No history data for symbol HWG
+2025-08-26 04:03:27,489 - yfinance - ERROR - $HWTN: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:27,490 - api.fetcher - WARNING - No history data for symbol HWTN
+2025-08-26 04:03:28,073 - yfinance - ERROR - $HWTN: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:28,073 - api.fetcher - WARNING - No history data for symbol HWTN
+2025-08-26 04:03:28,715 - yfinance - ERROR - $HYTN: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:28,715 - api.fetcher - WARNING - No history data for symbol HYTN
+2025-08-26 04:03:28,727 - yfinance - ERROR - $HYTN: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:28,727 - api.fetcher - WARNING - No history data for symbol HYTN
+2025-08-26 04:03:28,895 - yfinance - ERROR - $HZ: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:28,896 - yfinance - ERROR - $HZ: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:28,896 - api.fetcher - WARNING - No history data for symbol HZ
+2025-08-26 04:03:28,896 - api.fetcher - WARNING - No history data for symbol HZ
+2025-08-26 04:03:29,001 - yfinance - ERROR - $IAN: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:29,001 - api.fetcher - WARNING - No history data for symbol IAN
+2025-08-26 04:03:29,018 - yfinance - ERROR - $IAN: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:29,018 - api.fetcher - WARNING - No history data for symbol IAN
+2025-08-26 04:03:29,104 - yfinance - ERROR - $ICS: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:29,104 - api.fetcher - WARNING - No history data for symbol ICS
+2025-08-26 04:03:29,141 - yfinance - ERROR - $ICS: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:29,141 - api.fetcher - WARNING - No history data for symbol ICS
+2025-08-26 04:03:29,209 - yfinance - ERROR - $IDK: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:29,210 - api.fetcher - WARNING - No history data for symbol IDK
+2025-08-26 04:03:29,306 - yfinance - ERROR - $IDK: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:29,307 - api.fetcher - WARNING - No history data for symbol IDK
+2025-08-26 04:03:29,315 - yfinance - ERROR - $IME: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:29,315 - api.fetcher - WARNING - No history data for symbol IME
+2025-08-26 04:03:29,422 - yfinance - ERROR - $INNO: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:29,422 - api.fetcher - WARNING - No history data for symbol INNO
+2025-08-26 04:03:29,428 - yfinance - ERROR - $IME: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:29,428 - api.fetcher - WARNING - No history data for symbol IME
+2025-08-26 04:03:29,551 - yfinance - ERROR - $INNO: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:29,551 - api.fetcher - WARNING - No history data for symbol INNO
+2025-08-26 04:03:29,845 - yfinance - ERROR - $IRV: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:29,845 - api.fetcher - WARNING - No history data for symbol IRV
+2025-08-26 04:03:30,363 - yfinance - ERROR - $IRV: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:30,364 - api.fetcher - WARNING - No history data for symbol IRV
+2025-08-26 04:03:30,854 - yfinance - ERROR - $ISFT: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:30,854 - api.fetcher - WARNING - No history data for symbol ISFT
+2025-08-26 04:03:30,866 - yfinance - ERROR - $ISFT: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:30,866 - api.fetcher - WARNING - No history data for symbol ISFT
+2025-08-26 04:03:30,968 - yfinance - ERROR - $IWIN: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:30,969 - api.fetcher - WARNING - No history data for symbol IWIN
+2025-08-26 04:03:30,988 - yfinance - ERROR - $IWIN: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:30,988 - api.fetcher - WARNING - No history data for symbol IWIN
+2025-08-26 04:03:31,157 - yfinance - ERROR - $IZO: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:31,157 - api.fetcher - WARNING - No history data for symbol IZO
+2025-08-26 04:03:31,158 - yfinance - ERROR - $IZO: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:31,158 - api.fetcher - WARNING - No history data for symbol IZO
+2025-08-26 04:03:31,269 - yfinance - ERROR - $JBR: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:31,269 - api.fetcher - WARNING - No history data for symbol JBR
+2025-08-26 04:03:31,287 - yfinance - ERROR - $JBR: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:31,287 - api.fetcher - WARNING - No history data for symbol JBR
+2025-08-26 04:03:31,376 - yfinance - ERROR - $GEMS: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:31,377 - api.fetcher - WARNING - No history data for symbol GEMS
+2025-08-26 04:03:31,467 - yfinance - ERROR - $GEMS: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:31,467 - api.fetcher - WARNING - No history data for symbol GEMS
+2025-08-26 04:03:32,612 - yfinance - ERROR - $GET: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:32,613 - api.fetcher - WARNING - No history data for symbol GET
+2025-08-26 04:03:33,517 - yfinance - ERROR - $GET: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:33,518 - api.fetcher - WARNING - No history data for symbol GET
+2025-08-26 04:03:34,142 - yfinance - ERROR - $GFCO: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:34,142 - api.fetcher - WARNING - No history data for symbol GFCO
+2025-08-26 04:03:34,242 - yfinance - ERROR - $GFCO: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:34,243 - api.fetcher - WARNING - No history data for symbol GFCO
+2025-08-26 04:03:34,378 - yfinance - ERROR - $ARS: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:34,378 - api.fetcher - WARNING - No history data for symbol ARS
+2025-08-26 04:03:34,504 - yfinance - ERROR - $ARS: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:34,504 - api.fetcher - WARNING - No history data for symbol ARS
+2025-08-26 04:03:35,344 - yfinance - ERROR - $ARWY: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:35,344 - api.fetcher - WARNING - No history data for symbol ARWY
+2025-08-26 04:03:35,474 - yfinance - ERROR - $ASE: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:35,474 - api.fetcher - WARNING - No history data for symbol ASE
+2025-08-26 04:03:35,898 - yfinance - ERROR - $ARWY: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:35,898 - api.fetcher - WARNING - No history data for symbol ARWY
+2025-08-26 04:03:36,022 - yfinance - ERROR - $ASE: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:36,023 - api.fetcher - WARNING - No history data for symbol ASE
+2025-08-26 04:03:36,503 - yfinance - ERROR - $ASEP: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:36,504 - api.fetcher - WARNING - No history data for symbol ASEP
+2025-08-26 04:03:37,016 - yfinance - ERROR - $ASEP: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:37,016 - api.fetcher - WARNING - No history data for symbol ASEP
+2025-08-26 04:03:37,418 - yfinance - ERROR - $ASHL: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:37,419 - api.fetcher - WARNING - No history data for symbol ASHL
+2025-08-26 04:03:37,534 - yfinance - ERROR - $ASHL: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:37,534 - api.fetcher - WARNING - No history data for symbol ASHL
+2025-08-26 04:03:37,971 - yfinance - ERROR - $ATMO: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:37,971 - api.fetcher - WARNING - No history data for symbol ATMO
+2025-08-26 04:03:38,719 - yfinance - ERROR - $ATMO: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:38,719 - api.fetcher - WARNING - No history data for symbol ATMO
+2025-08-26 04:03:39,077 - yfinance - ERROR - $ATMY: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:39,078 - api.fetcher - WARNING - No history data for symbol ATMY
+2025-08-26 04:03:39,185 - yfinance - ERROR - $AUAG: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:39,185 - api.fetcher - WARNING - No history data for symbol AUAG
+2025-08-26 04:03:39,792 - yfinance - ERROR - $ATMY: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:39,793 - api.fetcher - WARNING - No history data for symbol ATMY
+2025-08-26 04:03:40,220 - yfinance - ERROR - $AUAG: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:40,220 - api.fetcher - WARNING - No history data for symbol AUAG
+2025-08-26 04:03:40,819 - yfinance - ERROR - $AUCU: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:40,820 - yfinance - ERROR - $AUCU: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:40,820 - api.fetcher - WARNING - No history data for symbol AUCU
+2025-08-26 04:03:40,820 - api.fetcher - WARNING - No history data for symbol AUCU
+2025-08-26 04:03:42,157 - yfinance - ERROR - $AUEX: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:42,157 - yfinance - ERROR - $AUEX: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:42,157 - api.fetcher - WARNING - No history data for symbol AUEX
+2025-08-26 04:03:42,158 - api.fetcher - WARNING - No history data for symbol AUEX
+2025-08-26 04:03:42,261 - yfinance - ERROR - $AUMC: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:42,261 - api.fetcher - WARNING - No history data for symbol AUMC
+2025-08-26 04:03:42,362 - yfinance - ERROR - $AUMC: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:42,362 - api.fetcher - WARNING - No history data for symbol AUMC
+2025-08-26 04:03:43,288 - yfinance - ERROR - $AUOZ: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:43,288 - api.fetcher - WARNING - No history data for symbol AUOZ
+2025-08-26 04:03:43,291 - yfinance - ERROR - $AUOZ: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:43,291 - api.fetcher - WARNING - No history data for symbol AUOZ
+2025-08-26 04:03:44,520 - yfinance - ERROR - $AVM-X: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:44,520 - yfinance - ERROR - $AVM-X: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:44,521 - api.fetcher - WARNING - No history data for symbol AVM-X
+2025-08-26 04:03:44,521 - api.fetcher - WARNING - No history data for symbol AVM-X
+2025-08-26 04:03:45,965 - yfinance - ERROR - $AWLI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:45,965 - yfinance - ERROR - $AWLI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:45,965 - api.fetcher - WARNING - No history data for symbol AWLI
+2025-08-26 04:03:45,965 - api.fetcher - WARNING - No history data for symbol AWLI
+2025-08-26 04:03:46,070 - yfinance - ERROR - $AXCP: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:46,070 - api.fetcher - WARNING - No history data for symbol AXCP
+2025-08-26 04:03:46,133 - yfinance - ERROR - $AXCP: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:46,133 - api.fetcher - WARNING - No history data for symbol AXCP
+2025-08-26 04:03:47,096 - yfinance - ERROR - $AYR-A: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:47,096 - yfinance - ERROR - $AYR-A: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:47,097 - api.fetcher - WARNING - No history data for symbol AYR-A
+2025-08-26 04:03:47,097 - api.fetcher - WARNING - No history data for symbol AYR-A
+2025-08-26 04:03:48,327 - yfinance - ERROR - $AYUR: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:48,327 - api.fetcher - WARNING - No history data for symbol AYUR
+2025-08-26 04:03:48,343 - yfinance - ERROR - $AYUR: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:48,344 - api.fetcher - WARNING - No history data for symbol AYUR
+2025-08-26 04:03:48,431 - yfinance - ERROR - $BAMM: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:48,431 - api.fetcher - WARNING - No history data for symbol BAMM
+2025-08-26 04:03:48,465 - yfinance - ERROR - $BAMM: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:48,465 - api.fetcher - WARNING - No history data for symbol BAMM
+2025-08-26 04:03:49,704 - yfinance - ERROR - $BATX: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:49,704 - api.fetcher - WARNING - No history data for symbol BATX
+2025-08-26 04:03:49,720 - yfinance - ERROR - $BATX: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:49,720 - api.fetcher - WARNING - No history data for symbol BATX
+2025-08-26 04:03:49,807 - yfinance - ERROR - $BBM: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:49,807 - api.fetcher - WARNING - No history data for symbol BBM
+2025-08-26 04:03:49,869 - yfinance - ERROR - $BBM: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:49,869 - api.fetcher - WARNING - No history data for symbol BBM
+2025-08-26 04:03:51,443 - yfinance - ERROR - $BDR: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:51,443 - api.fetcher - WARNING - No history data for symbol BDR
+2025-08-26 04:03:51,457 - yfinance - ERROR - $BDR: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:51,457 - api.fetcher - WARNING - No history data for symbol BDR
+2025-08-26 04:03:51,617 - yfinance - ERROR - $MGW: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:51,617 - api.fetcher - WARNING - No history data for symbol MGW
+2025-08-26 04:03:51,619 - yfinance - ERROR - $MGW: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:51,619 - api.fetcher - WARNING - No history data for symbol MGW
+2025-08-26 04:03:52,167 - yfinance - ERROR - $BEE: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:52,168 - api.fetcher - WARNING - No history data for symbol BEE
+2025-08-26 04:03:52,268 - yfinance - ERROR - $BFG: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:52,268 - api.fetcher - WARNING - No history data for symbol BFG
+2025-08-26 04:03:52,282 - yfinance - ERROR - $BEE: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:52,282 - api.fetcher - WARNING - No history data for symbol BEE
+2025-08-26 04:03:52,400 - yfinance - ERROR - $BFG: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:52,400 - api.fetcher - WARNING - No history data for symbol BFG
+2025-08-26 04:03:53,389 - yfinance - ERROR - $MILI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:53,389 - api.fetcher - WARNING - No history data for symbol MILI
+2025-08-26 04:03:54,496 - yfinance - ERROR - $MILI: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:54,496 - api.fetcher - WARNING - No history data for symbol MILI
+2025-08-26 04:03:55,009 - yfinance - ERROR - $MIRL: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:55,009 - api.fetcher - WARNING - No history data for symbol MIRL
+2025-08-26 04:03:55,009 - yfinance - ERROR - $MIRL: possibly delisted; no price data found  (period=1d) (Yahoo error = "No data found, symbol may be delisted")
+2025-08-26 04:03:55,010 - api.fetcher - WARNING - No history data for symbol MIRL
+2025-08-26 04:03:55,118 - yfinance - ERROR - $MIS: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:55,118 - api.fetcher - WARNING - No history data for symbol MIS
+2025-08-26 04:03:55,129 - yfinance - ERROR - $MIS: possibly delisted; no price data found  (period=1d)
+2025-08-26 04:03:55,130 - api.fetcher - WARNING - No history data for symbol MIS
+2025-08-26 04:03:59,334 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-08-26 04:03:59,335 - apscheduler.scheduler - INFO - Added job "fetch_and_store_eod_data" to job store "default"
+2025-08-26 04:03:59,335 - apscheduler.scheduler - INFO - Scheduler started
+2025-08-26 04:03:59,335 - api.main - INFO - Scheduler started. EOD fetch job scheduled.
+2025-08-26 04:17:49,987 - api.main - INFO - Scheduler shut down.
+2025-08-26 04:17:49,991 - apscheduler.scheduler - INFO - Scheduler has been shut down
