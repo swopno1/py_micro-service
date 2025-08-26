@@ -8,9 +8,13 @@ from .fetcher import fetch_symbol_meta, fetch_symbol_quote, fetch_stock_price_hi
 
 logger = logging.getLogger(__name__)
 cuid_generator = Cuid()
+FAILURE_THRESHOLD = 5
+
+# --- Symbol & Status Management ---
 
 def _get_stock_symbols():
     """Fetches stock symbols from various sources."""
+    # ... (implementation is unchanged)
     logger.info("Fetching S&P 500 symbols as a source for stock symbols.")
     url = "https://datahub.io/core/s-and-p-500-companies/r/constituents.csv"
     symbols = []
@@ -33,6 +37,7 @@ def _get_stock_symbols():
 
 def _get_crypto_symbols():
     """Fetches crypto symbols from Coinbase."""
+    # ... (implementation is unchanged)
     logger.info("Fetching crypto symbols from Coinbase.")
     symbols = [
         {"symbol": "BTC-USD", "name": "Bitcoin", "type": "crypto", "source": "YAHOO"},
@@ -41,31 +46,72 @@ def _get_crypto_symbols():
     logger.info(f"Successfully fetched {len(symbols)} crypto symbols.")
     return symbols
 
-def _update_symbol_status(cursor, symbols_to_update, new_status):
-    """Helper function to bulk update symbol statuses using an existing cursor."""
-    if not symbols_to_update:
-        return
-    logger.info(f"Queueing status update to '{new_status}' for {len(symbols_to_update)} symbols.")
-    update_query = 'UPDATE "SymbolsMaster" SET status = %s, "lastUpdated" = NOW() WHERE symbol = ANY(%s);'
-    cursor.execute(update_query, (new_status, symbols_to_update))
+def _fetch_active_symbols_with_attempts(limit=None):
+    """Fetches active symbols and their failure counts."""
+    symbols_data = []
+    conn = None
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            query = 'SELECT symbol, "failedAttempts" FROM "SymbolsMaster" WHERE status = %s'
+            params = ['active']
+            if limit:
+                query += ' LIMIT %s'
+                params.append(limit)
+            cursor.execute(query, tuple(params))
+            symbols_data = [dict(row) for row in cursor.fetchall()]
+    except Exception as e:
+        logger.error("Failed to fetch active symbols.", exc_info=True)
+    finally:
+        if conn: conn.close()
+    return symbols_data
+
+def _update_symbol_statuses(cursor, symbol_map):
+    """Bulk updates symbol statuses and failure counts based on fetch results."""
+    reset_list = [s for s, data in symbol_map.items() if data['status'] == 'ok' and data['failedAttempts'] > 0]
+    delist_list = [s for s, data in symbol_map.items() if data['status'] == 'delisted']
+    suspend_list = [s for s, data in symbol_map.items() if data['status'] == 'suspended']
+
+    # Increment failures for transient errors
+    increment_list = [s for s, data in symbol_map.items() if data['status'] == 'fetch_failed']
+    if increment_list:
+        logger.info(f"Incrementing failure count for {len(increment_list)} symbols.")
+        cursor.execute('UPDATE "SymbolsMaster" SET "failedAttempts" = "failedAttempts" + 1, "lastUpdated" = NOW() WHERE symbol = ANY(%s);', (increment_list,))
+
+    # Reset failure count for successful fetches
+    if reset_list:
+        logger.info(f"Resetting failure count for {len(reset_list)} symbols.")
+        cursor.execute('UPDATE "SymbolsMaster" SET "failedAttempts" = 0, "lastUpdated" = NOW() WHERE symbol = ANY(%s);', (reset_list,))
+
+    # Update statuses for delisted and suspended symbols
+    if delist_list:
+        logger.info(f"Updating status to 'delisted' for {len(delist_list)} symbols.")
+        cursor.execute('UPDATE "SymbolsMaster" SET status = %s, "lastUpdated" = NOW() WHERE symbol = ANY(%s);', ('delisted', delist_list))
+    if suspend_list:
+        logger.info(f"Updating status to 'suspended' for {len(suspend_list)} symbols.")
+        cursor.execute('UPDATE "SymbolsMaster" SET status = %s, "lastUpdated" = NOW() WHERE symbol = ANY(%s);', ('suspended', suspend_list))
+
+# --- Main Task Functions ---
 
 def update_symbols_master():
     """Populates and updates the SymbolsMaster table."""
+    # ... (implementation is largely unchanged, but ensures status is reset)
     logger.info("Starting SymbolsMaster update task.")
     all_symbols = _get_stock_symbols() + _get_crypto_symbols()
     if not all_symbols:
         logger.warning("No symbols were fetched. Aborting update task.")
         return
-    data_tuples = [(cuid_generator.generate(), s['symbol'], s['name'], s['source'], s['type'], 'active', 'NOW()') for s in all_symbols]
+    data_tuples = [(cuid_generator.generate(), s['symbol'], s['name'], s['source'], s['type'], 'active', 0, 'NOW()') for s in all_symbols]
     conn = None
     try:
         conn = get_db_connection()
         with conn.cursor() as cursor:
             insert_query = """
-                INSERT INTO "SymbolsMaster" (id, symbol, name, source, type, status, "lastUpdated")
+                INSERT INTO "SymbolsMaster" (id, symbol, name, source, type, status, "failedAttempts", "lastUpdated")
                 VALUES %s ON CONFLICT (symbol) DO UPDATE SET
                     name = EXCLUDED.name, source = EXCLUDED.source,
-                    type = EXCLUDED.type, status = 'active',
+                    type = EXCLUDED.type, status = 'active', -- Always reset to active
+                    "failedAttempts" = 0, -- Always reset attempts
                     "lastUpdated" = EXCLUDED."lastUpdated";
             """
             execute_values(cursor, insert_query, data_tuples)
@@ -77,156 +123,84 @@ def update_symbols_master():
     finally:
         if conn: conn.close()
 
-def _fetch_active_symbols(limit=None):
-    """Fetches a list of active symbols from the database."""
-    symbols = []
+def _process_task(task_name, fetch_function, write_function, limit=None):
+    """Generic function to handle the fetch-process-write cycle for tasks."""
+    logger.info(f"Starting {task_name} task.")
+    symbols_data = _fetch_active_symbols_with_attempts(limit=limit)
+    if not symbols_data:
+        logger.info(f"No active symbols to process for {task_name}.")
+        return
+    logger.info(f"Found {len(symbols_data)} active symbols for {task_name}.")
+
+    symbol_map = {s['symbol']: s for s in symbols_data}
+    symbols_list = list(symbol_map.keys())
+
+    valid_results = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        results = list(executor.map(fetch_function, symbols_list))
+
+    for i, (status, data) in enumerate(results):
+        symbol = symbols_list[i]
+        symbol_map[symbol]['status'] = status
+        if status == 'ok':
+            valid_results.append(data)
+        elif status == 'fetch_failed':
+            symbol_map[symbol]['failedAttempts'] += 1
+            if symbol_map[symbol]['failedAttempts'] >= FAILURE_THRESHOLD:
+                symbol_map[symbol]['status'] = 'suspended'
+
+    if not valid_results and all(v['status'] == 'ok' for v in symbol_map.values()):
+        logger.info(f"No data fetched and no status changes for {task_name}.")
+        return
+
     conn = None
     try:
         conn = get_db_connection()
         with conn.cursor() as cursor:
-            query = 'SELECT symbol FROM "SymbolsMaster" WHERE status = %s'
-            params = ['active']
-            if limit:
-                query += ' LIMIT %s'
-                params.append(limit)
-            cursor.execute(query, tuple(params))
-            symbols = list(set([row[0] for row in cursor.fetchall()]))
+            _update_symbol_statuses(cursor, symbol_map)
+            if valid_results:
+                write_function(cursor, valid_results)
+            conn.commit()
+        logger.info(f"{task_name} task database transaction committed.")
     except Exception as e:
-        logger.error("Failed to fetch active symbols.", exc_info=True)
+        logger.error(f"Failed to write {task_name} updates to DB.", exc_info=True)
+        if conn: conn.rollback()
     finally:
         if conn: conn.close()
-    return symbols
 
 def update_symbols_meta():
-    """Fetches and updates fundamental data for active symbols."""
-    logger.info("Starting SymbolsMeta update task.")
-    symbols = _fetch_active_symbols()
-    if not symbols:
-        logger.info("No active symbols to update meta for.")
-        return
-    logger.info(f"Found {len(symbols)} active symbols to update meta for.")
-
-    symbols_to_delist, symbols_to_fail, valid_results = [], [], []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-        results = list(executor.map(fetch_symbol_meta, symbols))
-
-    for i, (status, data) in enumerate(results):
-        if status == 'ok': valid_results.append(data)
-        elif status == 'delisted': symbols_to_delist.append(symbols[i])
-        else: symbols_to_fail.append(symbols[i])
-
-    if not valid_results and not symbols_to_delist and not symbols_to_fail:
-        logger.info("No data fetched and no status changes to make.")
-        return
-
-    conn = None
-    try:
-        conn = get_db_connection()
-        with conn.cursor() as cursor:
-            _update_symbol_status(cursor, symbols_to_delist, 'delisted')
-            _update_symbol_status(cursor, symbols_to_fail, 'fetch_failed')
-            if valid_results:
-                data_tuples = [(cuid_generator.generate(), r['symbol'], r['sector'], r['industry'], r['marketCap'], r['dividendYield'], r['debtEq'], r['rOE'], r['website'], r['country'], r['description'], r['logo'], r['source'], r['lastUpdated']) for r in valid_results]
-                insert_query = """
-                    INSERT INTO "SymbolsMeta" (id, symbol, sector, industry, "marketCap", "dividendYield", "debtEq", "rOE", website, country, description, logo, source, "lastUpdated")
-                    VALUES %s ON CONFLICT (symbol) DO UPDATE SET
-                        sector = EXCLUDED.sector, industry = EXCLUDED.industry, "marketCap" = EXCLUDED."marketCap", "dividendYield" = EXCLUDED."dividendYield", "debtEq" = EXCLUDED."debtEq", "rOE" = EXCLUDED."rOE", website = EXCLUDED.website, country = EXCLUDED.country, description = EXCLUDED.description, logo = EXCLUDED.logo, source = EXCLUDED.source, "lastUpdated" = EXCLUDED."lastUpdated";
-                """
-                execute_values(cursor, insert_query, data_tuples)
-                logger.info(f"Queued upsert for {len(valid_results)} meta records.")
-            conn.commit()
-        logger.info("SymbolsMeta task database transaction committed successfully.")
-    except Exception as e:
-        logger.error("Failed to write SymbolsMeta updates to DB.", exc_info=True)
-        if conn: conn.rollback()
-    finally:
-        if conn: conn.close()
+    def write_meta(cursor, results):
+        data_tuples = [(cuid_generator.generate(), r['symbol'], r['sector'], r['industry'], r['marketCap'], r['dividendYield'], r['debtEq'], r['rOE'], r['website'], r['country'], r['description'], r['logo'], r['source'], r['lastUpdated']) for r in results]
+        insert_query = """
+            INSERT INTO "SymbolsMeta" (id, symbol, sector, industry, "marketCap", "dividendYield", "debtEq", "rOE", website, country, description, logo, source, "lastUpdated")
+            VALUES %s ON CONFLICT (symbol) DO UPDATE SET
+                sector = EXCLUDED.sector, industry = EXCLUDED.industry, "marketCap" = EXCLUDED."marketCap", "dividendYield" = EXCLUDED."dividendYield", "debtEq" = EXCLUDED."debtEq", "rOE" = EXCLUDED."rOE", website = EXCLUDED.website, country = EXCLUDED.country, description = EXCLUDED.description, logo = EXCLUDED.logo, source = EXCLUDED.source, "lastUpdated" = EXCLUDED."lastUpdated";
+        """
+        execute_values(cursor, insert_query, data_tuples)
+        logger.info(f"Queued upsert for {len(results)} meta records.")
+    _process_task("SymbolsMeta", fetch_symbol_meta, write_meta)
 
 def update_symbol_quotes():
-    """Fetches and updates quote data for active symbols."""
-    logger.info("Starting SymbolQuote update task.")
-    symbols = _fetch_active_symbols(limit=500)
-    if not symbols:
-        logger.info("No active symbols to update quotes for.")
-        return
-    logger.info(f"Found {len(symbols)} active symbols to update quotes for.")
-
-    symbols_to_delist, symbols_to_fail, valid_results = [], [], []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-        results = list(executor.map(fetch_symbol_quote, symbols))
-
-    for i, (status, data) in enumerate(results):
-        if status == 'ok': valid_results.append(data)
-        elif status == 'delisted': symbols_to_delist.append(symbols[i])
-        else: symbols_to_fail.append(symbols[i])
-
-    if not valid_results and not symbols_to_delist and not symbols_to_fail:
-        logger.info("No data fetched and no status changes to make.")
-        return
-
-    conn = None
-    try:
-        conn = get_db_connection()
-        with conn.cursor() as cursor:
-            _update_symbol_status(cursor, symbols_to_delist, 'delisted')
-            _update_symbol_status(cursor, symbols_to_fail, 'fetch_failed')
-            if valid_results:
-                data_tuples = [(cuid_generator.generate(), r['symbol'], r['price'], r['change'], r['volume'], r['pE'], r['pEG'], r['pB'], r['beta'], r['w52High'], r['w52Low'], r['recommendation'], r['lastUpdated']) for r in valid_results]
-                insert_query = """
-                    INSERT INTO "SymbolQuote" (id, symbol, price, change, volume, "pE", "pEG", "pB", beta, "w52High", "w52Low", recommendation, "lastUpdated")
-                    VALUES %s ON CONFLICT (symbol) DO UPDATE SET
-                        price = EXCLUDED.price, change = EXCLUDED.change, volume = EXCLUDED.volume, "pE" = EXCLUDED."pE", "pEG" = EXCLUDED."pEG", "pB" = EXCLUDED."pB", beta = EXCLUDED.beta, "w52High" = EXCLUDED."w52High", "w52Low" = EXCLUDED."w52Low", recommendation = EXCLUDED.recommendation, "lastUpdated" = EXCLUDED."lastUpdated";
-                """
-                execute_values(cursor, insert_query, data_tuples)
-                logger.info(f"Queued upsert for {len(valid_results)} quote records.")
-            conn.commit()
-        logger.info("SymbolQuote task database transaction committed successfully.")
-    except Exception as e:
-        logger.error("Failed to write SymbolQuote updates to DB.", exc_info=True)
-        if conn: conn.rollback()
-    finally:
-        if conn: conn.close()
+    def write_quotes(cursor, results):
+        data_tuples = [(cuid_generator.generate(), r['symbol'], r['price'], r['change'], r['volume'], r['pE'], r['pEG'], r['pB'], r['beta'], r['w52High'], r['w52Low'], r['recommendation'], r['lastUpdated']) for r in results]
+        insert_query = """
+            INSERT INTO "SymbolQuote" (id, symbol, price, change, volume, "pE", "pEG", "pB", beta, "w52High", "w52Low", recommendation, "lastUpdated")
+            VALUES %s ON CONFLICT (symbol) DO UPDATE SET
+                price = EXCLUDED.price, change = EXCLUDED.change, volume = EXCLUDED.volume, "pE" = EXCLUDED."pE", "pEG" = EXCLUDED."pEG", "pB" = EXCLUDED."pB", beta = EXCLUDED.beta, "w52High" = EXCLUDED."w52High", "w52Low" = EXCLUDED."w52Low", recommendation = EXCLUDED.recommendation, "lastUpdated" = EXCLUDED."lastUpdated";
+        """
+        execute_values(cursor, insert_query, data_tuples)
+        logger.info(f"Queued upsert for {len(results)} quote records.")
+    _process_task("SymbolQuote", fetch_symbol_quote, write_quotes, limit=500)
 
 def update_stock_prices():
-    """Fetches and inserts the latest daily OHLCV data for active symbols."""
-    logger.info("Starting StockPrice update task.")
-    symbols = _fetch_active_symbols(limit=500)
-    if not symbols:
-        logger.info("No active symbols to update stock prices for.")
-        return
-    logger.info(f"Found {len(symbols)} active symbols to update stock prices for.")
-
-    symbols_to_delist, symbols_to_fail, all_price_records = [], [], []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-        results = list(executor.map(fetch_stock_price_history, symbols))
-
-    for i, (status, data) in enumerate(results):
-        if status == 'ok': all_price_records.extend(data)
-        elif status == 'delisted': symbols_to_delist.append(symbols[i])
-        else: symbols_to_fail.append(symbols[i])
-
-    if not all_price_records and not symbols_to_delist and not symbols_to_fail:
-        logger.info("No data fetched and no status changes to make.")
-        return
-
-    conn = None
-    try:
-        conn = get_db_connection()
-        with conn.cursor() as cursor:
-            _update_symbol_status(cursor, symbols_to_delist, 'delisted')
-            _update_symbol_status(cursor, symbols_to_fail, 'fetch_failed')
-            if all_price_records:
-                data_tuples = [(cuid_generator.generate(), r['symbol'], r['date'], r['open'], r['high'], r['low'], r['close'], r['volume']) for r in all_price_records]
-                insert_query = 'INSERT INTO "StockPrice" (id, symbol, date, open, high, low, close, volume) VALUES %s ON CONFLICT (symbol, date) DO NOTHING;'
-                execute_values(cursor, insert_query, data_tuples)
-                logger.info(f"Queued insert for {len(data_tuples)} price records.")
-            conn.commit()
-        logger.info("StockPrice task database transaction committed successfully.")
-    except Exception as e:
-        logger.error("Failed to write StockPrice updates to DB.", exc_info=True)
-        if conn: conn.rollback()
-    finally:
-        if conn: conn.close()
+    def write_prices(cursor, results):
+        all_records = [record for sublist in results for record in sublist]
+        if not all_records: return
+        data_tuples = [(cuid_generator.generate(), r['symbol'], r['date'], r['open'], r['high'], r['low'], r['close'], r['volume']) for r in all_records]
+        insert_query = 'INSERT INTO "StockPrice" (id, symbol, date, open, high, low, close, volume) VALUES %s ON CONFLICT (symbol, date) DO NOTHING;'
+        execute_values(cursor, insert_query, data_tuples)
+        logger.info(f"Queued insert for {len(data_tuples)} price records.")
+    _process_task("StockPrice", fetch_stock_price_history, write_prices, limit=500)
 
 if __name__ == '__main__':
     update_symbols_master()

@@ -13,6 +13,7 @@ class SymbolsMaster(BaseModel):
     currency: Optional[str] = None
     status: Optional[str] = None
     source: Optional[str] = None
+    failedAttempts: Optional[int] = 0
     lastUpdated: datetime
 
     class Config:
