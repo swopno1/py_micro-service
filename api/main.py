@@ -4,15 +4,22 @@ import logging
 from contextlib import asynccontextmanager
 from logging.handlers import RotatingFileHandler
 import concurrent.futures
+from datetime import date
+from typing import List, Optional
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks, Security
+from fastapi import APIRouter, FastAPI, Depends, HTTPException, BackgroundTasks, Security, Query
 from psycopg2.extras import execute_values
 from psycopg2.extensions import connection as PgConnection
 from fastapi.security import APIKeyHeader
 
-from .database import get_db_connection
-from .fetcher import fetch_stock_data
+from .database import get_db_connection, get_db
+from .fetcher import (
+    fetch_symbol_meta,
+    fetch_symbol_quote,
+    fetch_stock_price_history,
+)
 from .models import StockPrice, SymbolsMaster, SymbolsMeta, SymbolQuote
+from .tasks import update_symbols_master, update_symbols_meta, update_symbol_quotes, update_stock_prices
 from cuid2 import Cuid
 
 # 1. Set up logging
@@ -44,21 +51,56 @@ cuid_generator = Cuid()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Schedule the EOD fetch job to run every weekday at 22:00 UTC.
-    # For testing, you could use a shorter interval like:
-    # scheduler.add_job(fetch_and_store_eod_data, "interval", seconds=60)
+    # Schedule the SymbolsMaster update job to run on the 1st day of every month.
     scheduler.add_job(
-        fetch_and_store_eod_data,
+        update_symbols_master,
+        "cron",
+        day=1,
+        hour=10,
+        minute=0,
+        timezone="utc",
+        id="update_symbols_master_job",
+        replace_existing=True,
+    )
+
+    # Schedule the SymbolsMeta update job to run on the 2nd day of every month.
+    scheduler.add_job(
+        update_symbols_meta,
+        "cron",
+        day=2,
+        hour=10,
+        minute=0,
+        timezone="utc",
+        id="update_symbols_meta_job",
+        replace_existing=True,
+    )
+
+    # Schedule the SymbolQuote update job to run every weekday at 22:00 UTC.
+    scheduler.add_job(
+        update_symbol_quotes,
         "cron",
         day_of_week="mon-fri",
         hour=22,
         minute=0,
         timezone="utc",
-        id="eod_fetch_job",
+        id="update_symbol_quotes_job",
         replace_existing=True,
     )
+
+    # Schedule the StockPrice update job to run every weekday at 23:00 UTC
+    scheduler.add_job(
+        update_stock_prices,
+        "cron",
+        day_of_week="mon-fri",
+        hour=23,
+        minute=0,
+        timezone="utc",
+        id="update_stock_prices_job",
+        replace_existing=True,
+    )
+
     scheduler.start()
-    logger.info("Scheduler started. EOD fetch job scheduled.")
+    logger.info("Scheduler started. Jobs are scheduled.")
     yield
     scheduler.shutdown()
     logger.info("Scheduler shut down.")
@@ -79,178 +121,121 @@ async def get_api_key(key: str = Security(api_key_header)):
     else:
         raise HTTPException(status_code=403, detail="Could not validate credentials.")
 
-from .database import get_db
+# Create a new router for task-related endpoints
+tasks_router = APIRouter(prefix="/tasks", tags=["tasks"])
 
+@tasks_router.post("/symbols/master/run", dependencies=[Depends(get_api_key)])
+async def run_update_symbols_master(background_tasks: BackgroundTasks):
+    """Manually triggers the SymbolsMaster update task."""
+    background_tasks.add_task(update_symbols_master)
+    return {"message": "SymbolsMaster update task has been triggered in the background."}
 
-@app.get("/")
-async def health_check():
-    return {"status": "healthy"}
+@tasks_router.post("/symbols/meta/run", dependencies=[Depends(get_api_key)])
+async def run_update_symbols_meta(background_tasks: BackgroundTasks):
+    """Manually triggers the SymbolsMeta update task."""
+    background_tasks.add_task(update_symbols_meta)
+    return {"message": "SymbolsMeta update task has been triggered in the background."}
 
-def fetch_and_store_eod_data():
-    """
-    This is the core logic that will run in the background.
-    It needs its own database connection because it runs outside the
-    request/response cycle of the Depends(get_db) dependency.
-    """
-    logger.info("Background task: Starting EOD data fetch.")
-    conn = get_db_connection()
-    try:
-        with conn.cursor() as cursor:
-            # Get top 500 stocks from your SymbolsMaster table
-            cursor.execute('SELECT symbol FROM "SymbolsMaster" LIMIT 500')
-            symbols = list(set([row[0] for row in cursor.fetchall()]))
+@tasks_router.post("/symbols/quote/run", dependencies=[Depends(get_api_key)])
+async def run_update_symbol_quotes(background_tasks: BackgroundTasks):
+    """Manually triggers the SymbolQuote update task."""
+    background_tasks.add_task(update_symbol_quotes)
+    return {"message": "SymbolQuote update task has been triggered in the background."}
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            results = list(executor.map(fetch_stock_data, symbols))
+@tasks_router.post("/stocks/price/run", dependencies=[Depends(get_api_key)])
+async def run_update_stock_prices(background_tasks: BackgroundTasks):
+    """Manually triggers the StockPrice update task."""
+    background_tasks.add_task(update_stock_prices)
+    return {"message": "StockPrice update task has been triggered in the background."}
 
-        valid_results = [res for res in results if res]
-        if not valid_results:
-            logger.info("Background task: No new data to fetch or insert.")
-            return
+app.include_router(tasks_router)
 
-        with conn.cursor() as cursor:
-            # Upsert data for SymbolsMeta
-            meta_data_tuples = [
-                (
-                    cuid_generator.generate(),
-                    res['meta']['symbol'],
-                    res['meta']['sector'],
-                    res['meta']['industry'],
-                    res['meta']['marketCap'],
-                    res['meta']['dividendYield'],
-                    res['meta']['debtEq'],
-                    res['meta']['rOE'],
-                    res['meta']['website'],
-                    res['meta']['country'],
-                    res['meta']['description'],
-                    res['meta']['logo'],
-                    res['meta']['source'],
-                    res['meta']['lastUpdated'],
-                )
-                for res in valid_results if res.get('meta')
-            ]
-            if meta_data_tuples:
-                insert_meta_query = """
-                    INSERT INTO "SymbolsMeta" (id, symbol, sector, industry, "marketCap", "dividendYield", "debtEq", "rOE", website, country, description, logo, source, "lastUpdated")
-                    VALUES %s
-                    ON CONFLICT (symbol) DO UPDATE SET
-                        sector = EXCLUDED.sector,
-                        industry = EXCLUDED.industry,
-                        "marketCap" = EXCLUDED."marketCap",
-                        "dividendYield" = EXCLUDED."dividendYield",
-                        "debtEq" = EXCLUDED."debtEq",
-                        "rOE" = EXCLUDED."rOE",
-                        website = EXCLUDED.website,
-                        country = EXCLUDED.country,
-                        description = EXCLUDED.description,
-                        logo = EXCLUDED.logo,
-                        source = EXCLUDED.source,
-                        "lastUpdated" = EXCLUDED."lastUpdated";
-                """
-                execute_values(cursor, insert_meta_query, meta_data_tuples)
+# Create a new router for data retrieval endpoints
+symbols_router = APIRouter(prefix="/symbols", tags=["symbols"])
 
-            # Upsert data for SymbolQuote
-            quote_data_tuples = [
-                (
-                    cuid_generator.generate(),
-                    res['quote']['symbol'],
-                    res['quote']['price'],
-                    res['quote']['change'],
-                    res['quote']['volume'],
-                    res['quote']['pE'],
-                    res['quote']['pEG'],
-                    res['quote']['pB'],
-                    res['quote']['beta'],
-                    res['quote']['w52High'],
-                    res['quote']['w52Low'],
-                    res['quote']['recommendation'],
-                    res['quote']['lastUpdated'],
-                )
-                for res in valid_results if res.get('quote')
-            ]
-            if quote_data_tuples:
-                insert_quote_query = """
-                    INSERT INTO "SymbolQuote" (id, symbol, price, change, volume, "pE", "pEG", "pB", beta, "w52High", "w52Low", recommendation, "lastUpdated")
-                    VALUES %s
-                    ON CONFLICT (symbol) DO UPDATE SET
-                        price = EXCLUDED.price,
-                        change = EXCLUDED.change,
-                        volume = EXCLUDED.volume,
-                        "pE" = EXCLUDED."pE",
-                        "pEG" = EXCLUDED."pEG",
-                        "pB" = EXCLUDED."pB",
-                        beta = EXCLUDED.beta,
-                        "w52High" = EXCLUDED."w52High",
-                        "w52Low" = EXCLUDED."w52Low",
-                        recommendation = EXCLUDED.recommendation,
-                        "lastUpdated" = EXCLUDED."lastUpdated";
-                """
-                execute_values(cursor, insert_quote_query, quote_data_tuples)
-
-            # Insert data for StockPrice
-            price_data_tuples = [
-                (
-                    cuid_generator.generate(),
-                    res['price']['symbol'],
-                    res['price']['date'],
-                    res['price']['open'],
-                    res['price']['high'],
-                    res['price']['low'],
-                    res['price']['close'],
-                    res['price']['volume'],
-                )
-                for res in valid_results if res.get('price')
-            ]
-            if price_data_tuples:
-                insert_price_query = """
-                    INSERT INTO "StockPrice" (id, symbol, date, open, high, low, close, volume)
-                    VALUES %s ON CONFLICT (symbol, date) DO NOTHING
-                """
-                execute_values(cursor, insert_price_query, price_data_tuples)
-
-            conn.commit()
-        logger.info(f"Background task: Successfully processed {len(valid_results)} records.")
-    except Exception as e:
-        logger.error("Background task failed", exc_info=True)
-        if conn:
-            conn.rollback()
-    finally:
-        if conn:
-            conn.close()
-
-@app.post("/trigger-eod-fetch", dependencies=[Depends(get_api_key)])
-async def trigger_eod_fetch(
-    background_tasks: BackgroundTasks,
-):
-    try:
-        background_tasks.add_task(fetch_and_store_eod_data)
-        return {"message": "EOD data fetch has been triggered in the background."}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An internal error occurred: {e}")
-
-@app.get(
-    "/stock/{symbol}",
-    response_model=StockPrice,
+@symbols_router.get(
+    "/meta/{symbol}",
+    response_model=SymbolsMeta,
     dependencies=[Depends(get_api_key)],
 )
-async def get_latest_stock_price(symbol: str, conn: PgConnection = Depends(get_db)):
-    """
-    Retrieves the most recent end-of-day stock price for a given symbol.
-    """
+async def get_symbol_meta(symbol: str, conn: PgConnection = Depends(get_db)):
+    """Retrieves the metadata for a given symbol."""
     with conn.cursor() as cursor:
         cursor.execute(
-            """
-            SELECT symbol, date, open, high, low, close, volume
-            FROM "StockPrice"
-            WHERE symbol = %s
-            ORDER BY date DESC
-            LIMIT 1
-            """,
-            (symbol.upper(),),  # Normalize symbol to uppercase
+            'SELECT * FROM "SymbolsMeta" WHERE symbol = %s',
+            (symbol.upper(),),
         )
         record = cursor.fetchone()
 
     if not record:
+        raise HTTPException(status_code=404, detail=f"No metadata found for symbol {symbol}")
+
+    # Fetch column names from cursor.description
+    colnames = [desc[0] for desc in cursor.description]
+    record_dict = dict(zip(colnames, record))
+
+    return SymbolsMeta(**record_dict)
+
+@symbols_router.get(
+    "/quote/{symbol}",
+    response_model=SymbolQuote,
+    dependencies=[Depends(get_api_key)],
+)
+async def get_symbol_quote(symbol: str, conn: PgConnection = Depends(get_db)):
+    """Retrieves the latest quote for a given symbol."""
+    with conn.cursor() as cursor:
+        cursor.execute(
+            'SELECT * FROM "SymbolQuote" WHERE symbol = %s',
+            (symbol.upper(),),
+        )
+        record = cursor.fetchone()
+
+    if not record:
+        raise HTTPException(status_code=404, detail=f"No quote data found for symbol {symbol}")
+
+    colnames = [desc[0] for desc in cursor.description]
+    record_dict = dict(zip(colnames, record))
+
+    return SymbolQuote(**record_dict)
+
+@symbols_router.get(
+    "/stocks/{symbol}/price",
+    response_model=List[StockPrice],
+    dependencies=[Depends(get_api_key)],
+)
+async def get_stock_price_history(
+    symbol: str,
+    start_date: Optional[date] = Query(None, description="Start date for historical data (YYYY-MM-DD)"),
+    end_date: Optional[date] = Query(None, description="End date for historical data (YYYY-MM-DD)"),
+    conn: PgConnection = Depends(get_db)
+):
+    """
+    Retrieves the historical OHLCV data for a given symbol.
+    """
+    query = 'SELECT symbol, date, open, high, low, close, volume FROM "StockPrice" WHERE symbol = %s'
+    params = [symbol.upper()]
+
+    if start_date:
+        query += " AND date >= %s"
+        params.append(start_date)
+    if end_date:
+        query += " AND date <= %s"
+        params.append(end_date)
+
+    query += " ORDER BY date DESC"
+
+    with conn.cursor() as cursor:
+        cursor.execute(query, tuple(params))
+        records = cursor.fetchall()
+
+    if not records:
         raise HTTPException(status_code=404, detail=f"No stock price data found for symbol {symbol}")
 
-    return StockPrice(**record)
+    colnames = [desc[0] for desc in cursor.description]
+    return [StockPrice(**dict(zip(colnames, record))) for record in records]
+
+app.include_router(symbols_router)
+
+@app.get("/")
+async def health_check():
+    return {"status": "healthy"}
