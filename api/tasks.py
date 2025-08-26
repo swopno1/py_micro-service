@@ -1,6 +1,6 @@
 import logging
 import requests
-import concurrent.futures
+import time
 from cuid2 import Cuid
 from psycopg2.extras import execute_values
 from .database import get_db_connection
@@ -118,15 +118,17 @@ def update_symbols_meta():
     try:
         with conn.cursor() as cursor:
             cursor.execute('SELECT symbol FROM "SymbolsMaster"')
-            # Using a set to ensure unique symbols
             symbols = list(set([row[0] for row in cursor.fetchall()]))
 
         logger.info(f"Found {len(symbols)} symbols to update meta for.")
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-            results = list(executor.map(fetch_symbol_meta, symbols))
+        valid_results = []
+        for symbol in symbols:
+            result = fetch_symbol_meta(symbol)
+            if result:
+                valid_results.append(result)
+            time.sleep(0.1) # 100ms delay to avoid rate limiting
 
-        valid_results = [res for res in results if res]
         if not valid_results:
             logger.info("No new meta data fetched. Aborting update task.")
             return
@@ -134,21 +136,11 @@ def update_symbols_meta():
         data_tuples = [
             (
                 cuid_generator.generate(),
-                res['symbol'],
-                res['sector'],
-                res['industry'],
-                res['marketCap'],
-                res['dividendYield'],
-                res['debtEq'],
-                res['rOE'],
-                res['website'],
-                res['country'],
-                res['description'],
-                res['logo'],
-                res['source'],
+                res['symbol'], res['sector'], res['industry'], res['marketCap'],
+                res['dividendYield'], res['debtEq'], res['rOE'], res['website'],
+                res['country'], res['description'], res['logo'], res['source'],
                 res['lastUpdated'],
-            )
-            for res in valid_results
+            ) for res in valid_results
         ]
 
         with conn.cursor() as cursor:
@@ -156,18 +148,12 @@ def update_symbols_meta():
                 INSERT INTO "SymbolsMeta" (id, symbol, sector, industry, "marketCap", "dividendYield", "debtEq", "rOE", website, country, description, logo, source, "lastUpdated")
                 VALUES %s
                 ON CONFLICT (symbol) DO UPDATE SET
-                    sector = EXCLUDED.sector,
-                    industry = EXCLUDED.industry,
-                    "marketCap" = EXCLUDED."marketCap",
-                    "dividendYield" = EXCLUDED."dividendYield",
-                    "debtEq" = EXCLUDED."debtEq",
-                    "rOE" = EXCLUDED."rOE",
-                    website = EXCLUDED.website,
-                    country = EXCLUDED.country,
-                    description = EXCLUDED.description,
-                    logo = EXCLUDED.logo,
-                    source = EXCLUDED.source,
-                    "lastUpdated" = EXCLUDED."lastUpdated";
+                    sector = EXCLUDED.sector, industry = EXCLUDED.industry,
+                    "marketCap" = EXCLUDED."marketCap", "dividendYield" = EXCLUDED."dividendYield",
+                    "debtEq" = EXCLUDED."debtEq", "rOE" = EXCLUDED."rOE",
+                    website = EXCLUDED.website, country = EXCLUDED.country,
+                    description = EXCLUDED.description, logo = EXCLUDED.logo,
+                    source = EXCLUDED.source, "lastUpdated" = EXCLUDED."lastUpdated";
             """
             execute_values(cursor, insert_meta_query, data_tuples)
             conn.commit()
@@ -175,11 +161,9 @@ def update_symbols_meta():
 
     except Exception as e:
         logger.error("Failed to update SymbolsMeta.", exc_info=True)
-        if conn:
-            conn.rollback()
+        if conn: conn.rollback()
     finally:
-        if conn:
-            conn.close()
+        if conn: conn.close()
 
 def update_symbol_quotes():
     """
@@ -189,15 +173,18 @@ def update_symbol_quotes():
     conn = get_db_connection()
     try:
         with conn.cursor() as cursor:
-            cursor.execute('SELECT symbol FROM "SymbolsMaster" LIMIT 500') # Limiting for performance
+            cursor.execute('SELECT symbol FROM "SymbolsMaster" LIMIT 500')
             symbols = list(set([row[0] for row in cursor.fetchall()]))
 
         logger.info(f"Found {len(symbols)} symbols to update quotes for.")
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-            results = list(executor.map(fetch_symbol_quote, symbols))
+        valid_results = []
+        for symbol in symbols:
+            result = fetch_symbol_quote(symbol)
+            if result:
+                valid_results.append(result)
+            time.sleep(0.1) # 100ms delay
 
-        valid_results = [res for res in results if res]
         if not valid_results:
             logger.info("No new quote data fetched. Aborting update task.")
             return
@@ -205,20 +192,10 @@ def update_symbol_quotes():
         data_tuples = [
             (
                 cuid_generator.generate(),
-                res['symbol'],
-                res['price'],
-                res['change'],
-                res['volume'],
-                res['pE'],
-                res['pEG'],
-                res['pB'],
-                res['beta'],
-                res['w52High'],
-                res['w52Low'],
-                res['recommendation'],
-                res['lastUpdated'],
-            )
-            for res in valid_results
+                res['symbol'], res['price'], res['change'], res['volume'],
+                res['pE'], res['pEG'], res['pB'], res['beta'], res['w52High'],
+                res['w52Low'], res['recommendation'], res['lastUpdated'],
+            ) for res in valid_results
         ]
 
         with conn.cursor() as cursor:
@@ -226,16 +203,10 @@ def update_symbol_quotes():
                 INSERT INTO "SymbolQuote" (id, symbol, price, change, volume, "pE", "pEG", "pB", beta, "w52High", "w52Low", recommendation, "lastUpdated")
                 VALUES %s
                 ON CONFLICT (symbol) DO UPDATE SET
-                    price = EXCLUDED.price,
-                    change = EXCLUDED.change,
-                    volume = EXCLUDED.volume,
-                    "pE" = EXCLUDED."pE",
-                    "pEG" = EXCLUDED."pEG",
-                    "pB" = EXCLUDED."pB",
-                    beta = EXCLUDED.beta,
-                    "w52High" = EXCLUDED."w52High",
-                    "w52Low" = EXCLUDED."w52Low",
-                    recommendation = EXCLUDED.recommendation,
+                    price = EXCLUDED.price, change = EXCLUDED.change, volume = EXCLUDED.volume,
+                    "pE" = EXCLUDED."pE", "pEG" = EXCLUDED."pEG", "pB" = EXCLUDED."pB",
+                    beta = EXCLUDED.beta, "w52High" = EXCLUDED."w52High",
+                    "w52Low" = EXCLUDED."w52Low", recommendation = EXCLUDED.recommendation,
                     "lastUpdated" = EXCLUDED."lastUpdated";
             """
             execute_values(cursor, insert_quote_query, data_tuples)
@@ -244,11 +215,9 @@ def update_symbol_quotes():
 
     except Exception as e:
         logger.error("Failed to update SymbolQuote.", exc_info=True)
-        if conn:
-            conn.rollback()
+        if conn: conn.rollback()
     finally:
-        if conn:
-            conn.close()
+        if conn: conn.close()
 
 def update_stock_prices():
     """
@@ -258,17 +227,17 @@ def update_stock_prices():
     conn = get_db_connection()
     try:
         with conn.cursor() as cursor:
-            cursor.execute('SELECT symbol FROM "SymbolsMaster" LIMIT 500') # Limiting for performance
+            cursor.execute('SELECT symbol FROM "SymbolsMaster" LIMIT 500')
             symbols = list(set([row[0] for row in cursor.fetchall()]))
 
         logger.info(f"Found {len(symbols)} symbols to update stock prices for.")
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-            # This returns a list of lists, where each inner list has daily records
-            results = list(executor.map(fetch_stock_price_history, symbols))
-
-        # Flatten the list of lists into a single list of records
-        all_price_records = [record for sublist in results for record in sublist]
+        all_price_records = []
+        for symbol in symbols:
+            results = fetch_stock_price_history(symbol)
+            if results:
+                all_price_records.extend(results)
+            time.sleep(0.1) # 100ms delay
 
         if not all_price_records:
             logger.info("No new price data fetched. Aborting update task.")
@@ -277,15 +246,9 @@ def update_stock_prices():
         data_tuples = [
             (
                 cuid_generator.generate(),
-                rec['symbol'],
-                rec['date'],
-                rec['open'],
-                rec['high'],
-                rec['low'],
-                rec['close'],
-                rec['volume'],
-            )
-            for rec in all_price_records
+                rec['symbol'], rec['date'], rec['open'], rec['high'],
+                rec['low'], rec['close'], rec['volume'],
+            ) for rec in all_price_records
         ]
 
         with conn.cursor() as cursor:
@@ -299,11 +262,9 @@ def update_stock_prices():
 
     except Exception as e:
         logger.error("Failed to update StockPrice.", exc_info=True)
-        if conn:
-            conn.rollback()
+        if conn: conn.rollback()
     finally:
-        if conn:
-            conn.close()
+        if conn: conn.close()
 
 if __name__ == '__main__':
     # This allows running the task directly for testing
