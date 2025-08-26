@@ -1,5 +1,5 @@
 import os
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, ANY
 from fastapi.testclient import TestClient
 import pytest
 from datetime import date, datetime
@@ -157,3 +157,44 @@ def test_get_stock_price_history_with_dates(headers, mock_db_cursor):
     assert "date <= %s" in sql_query
     assert date(2023, 1, 1) in sql_params
     assert date(2023, 1, 31) in sql_params
+
+
+# --- Tests for External Data Endpoint ---
+
+MOCK_UPDATED_DATA = {
+    "meta": MOCK_META_DATA,
+    "quote": MOCK_QUOTE_DATA,
+    "price_history": [MOCK_PRICE_DATA],
+}
+
+@patch("api.main.update_symbol_from_external_source")
+def test_update_symbol_from_source_success(mock_update, headers):
+    """Test successful update of a symbol from an external source."""
+    # Configure the async mock to return a value
+    mock_update.return_value = MOCK_UPDATED_DATA
+
+    response = client.post("/symbols/external/TEST", headers=headers)
+
+    assert response.status_code == 200
+    json_response = response.json()
+    assert json_response["meta"]["symbol"] == "TEST"
+    assert json_response["quote"]["price"] == 100.0
+    assert len(json_response["price_history"]) == 1
+    # Check that the underlying task was called correctly
+    mock_update.assert_called_once()
+    # To check arguments of an async function, you can inspect call_args
+    args, kwargs = mock_update.call_args
+    assert args[0] == "TEST"  # symbol
+    assert len(args) == 2  # symbol and conn
+    # A simple way to check if it's a connection-like object
+    assert hasattr(args[1], "cursor")
+
+
+@patch("api.main.update_symbol_from_external_source")
+def test_update_symbol_from_source_not_found(mock_update, headers):
+    """Test 404 when updating a symbol that cannot be found."""
+    mock_update.return_value = {"meta": None, "quote": None, "price_history": []}
+
+    response = client.post("/symbols/external/NONEXISTENT", headers=headers)
+
+    assert response.status_code == 404
