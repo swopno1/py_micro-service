@@ -10,9 +10,9 @@ from psycopg2.extras import execute_values
 from psycopg2.extensions import connection as PgConnection
 from fastapi.security import APIKeyHeader
 
-from .database import get_db_connection
+from .database import get_db_connection, get_db
 from .fetcher import fetch_stock_data
-from .models import StockPrice, SymbolsMaster, SymbolsMeta, SymbolQuote
+from .models import StockPrice
 from cuid2 import Cuid
 
 # 1. Set up logging
@@ -44,9 +44,6 @@ cuid_generator = Cuid()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Schedule the EOD fetch job to run every weekday at 22:00 UTC.
-    # For testing, you could use a shorter interval like:
-    # scheduler.add_job(fetch_and_store_eod_data, "interval", seconds=60)
     scheduler.add_job(
         fetch_and_store_eod_data,
         "cron",
@@ -79,137 +76,60 @@ async def get_api_key(key: str = Security(api_key_header)):
     else:
         raise HTTPException(status_code=403, detail="Could not validate credentials.")
 
-from .database import get_db
-
-
-@app.get("/")
-async def health_check():
-    return {"status": "healthy"}
-
 def fetch_and_store_eod_data():
     """
     This is the core logic that will run in the background.
-    It needs its own database connection because it runs outside the
-    request/response cycle of the Depends(get_db) dependency.
+    It fetches and stores the end-of-day stock prices.
     """
     logger.info("Background task: Starting EOD data fetch.")
-    conn = get_db_connection()
+    conn = None
     try:
+        conn = get_db_connection()
         with conn.cursor() as cursor:
-            # Get top 500 stocks from your SymbolsMaster table
-            cursor.execute('SELECT symbol FROM "SymbolsMaster" LIMIT 500')
-            symbols = list(set([row[0] for row in cursor.fetchall()]))
+            cursor.execute('SELECT symbol FROM "SymbolsMaster"')
+            # Use a set to avoid duplicate symbols if any
+            symbols = list(set([row['symbol'] for row in cursor.fetchall()]))
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            results = list(executor.map(fetch_stock_data, symbols))
-
-        valid_results = [res for res in results if res]
-        if not valid_results:
-            logger.info("Background task: No new data to fetch or insert.")
+        if not symbols:
+            logger.info("No symbols found in SymbolsMaster. Skipping EOD fetch.")
             return
 
-        with conn.cursor() as cursor:
-            # Upsert data for SymbolsMeta
-            meta_data_tuples = [
-                (
-                    cuid_generator.generate(),
-                    res['meta']['symbol'],
-                    res['meta']['sector'],
-                    res['meta']['industry'],
-                    res['meta']['marketCap'],
-                    res['meta']['dividendYield'],
-                    res['meta']['debtEq'],
-                    res['meta']['rOE'],
-                    res['meta']['website'],
-                    res['meta']['country'],
-                    res['meta']['description'],
-                    res['meta']['logo'],
-                    res['meta']['source'],
-                    res['meta']['lastUpdated'],
-                )
-                for res in valid_results if res.get('meta')
-            ]
-            if meta_data_tuples:
-                insert_meta_query = """
-                    INSERT INTO "SymbolsMeta" (id, symbol, sector, industry, "marketCap", "dividendYield", "debtEq", "rOE", website, country, description, logo, source, "lastUpdated")
-                    VALUES %s
-                    ON CONFLICT (symbol) DO UPDATE SET
-                        sector = EXCLUDED.sector,
-                        industry = EXCLUDED.industry,
-                        "marketCap" = EXCLUDED."marketCap",
-                        "dividendYield" = EXCLUDED."dividendYield",
-                        "debtEq" = EXCLUDED."debtEq",
-                        "rOE" = EXCLUDED."rOE",
-                        website = EXCLUDED.website,
-                        country = EXCLUDED.country,
-                        description = EXCLUDED.description,
-                        logo = EXCLUDED.logo,
-                        source = EXCLUDED.source,
-                        "lastUpdated" = EXCLUDED."lastUpdated";
-                """
-                execute_values(cursor, insert_meta_query, meta_data_tuples)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            results = list(executor.map(fetch_stock_data, symbols))
 
-            # Upsert data for SymbolQuote
-            quote_data_tuples = [
-                (
-                    cuid_generator.generate(),
-                    res['quote']['symbol'],
-                    res['quote']['price'],
-                    res['quote']['change'],
-                    res['quote']['volume'],
-                    res['quote']['pE'],
-                    res['quote']['pEG'],
-                    res['quote']['pB'],
-                    res['quote']['beta'],
-                    res['quote']['w52High'],
-                    res['quote']['w52Low'],
-                    res['quote']['recommendation'],
-                    res['quote']['lastUpdated'],
-                )
-                for res in valid_results if res.get('quote')
-            ]
-            if quote_data_tuples:
-                insert_quote_query = """
-                    INSERT INTO "SymbolQuote" (id, symbol, price, change, volume, "pE", "pEG", "pB", beta, "w52High", "w52Low", recommendation, "lastUpdated")
-                    VALUES %s
-                    ON CONFLICT (symbol) DO UPDATE SET
-                        price = EXCLUDED.price,
-                        change = EXCLUDED.change,
-                        volume = EXCLUDED.volume,
-                        "pE" = EXCLUDED."pE",
-                        "pEG" = EXCLUDED."pEG",
-                        "pB" = EXCLUDED."pB",
-                        beta = EXCLUDED.beta,
-                        "w52High" = EXCLUDED."w52High",
-                        "w52Low" = EXCLUDED."w52Low",
-                        recommendation = EXCLUDED.recommendation,
-                        "lastUpdated" = EXCLUDED."lastUpdated";
-                """
-                execute_values(cursor, insert_quote_query, quote_data_tuples)
+        valid_results = [res for res in results if res and res.get('price')]
+        if not valid_results:
+            logger.info("Background task: No new price data to fetch or insert.")
+            return
 
-            # Insert data for StockPrice
-            price_data_tuples = [
+        price_data_tuples = []
+        for res in valid_results:
+            price = res['price']
+            price_data_tuples.append(
                 (
                     cuid_generator.generate(),
-                    res['price']['symbol'],
-                    res['price']['date'],
-                    res['price']['open'],
-                    res['price']['high'],
-                    res['price']['low'],
-                    res['price']['close'],
-                    res['price']['volume'],
+                    price['symbol'],
+                    price['date'],
+                    price['open'],
+                    price['high'],
+                    price['low'],
+                    price['close'],
+                    price['volume'],
                 )
-                for res in valid_results if res.get('price')
-            ]
-            if price_data_tuples:
+            )
+
+        if price_data_tuples:
+            with conn.cursor() as cursor:
                 insert_price_query = """
                     INSERT INTO "StockPrice" (id, symbol, date, open, high, low, close, volume)
                     VALUES %s ON CONFLICT (symbol, date) DO NOTHING
                 """
                 execute_values(cursor, insert_price_query, price_data_tuples)
+                conn.commit()
+            logger.info(f"Background task: Successfully processed and stored {len(price_data_tuples)} price records.")
+        else:
+            logger.info("Background task: No valid price data tuples to insert.")
 
-            conn.commit()
-        logger.info(f"Background task: Successfully processed {len(valid_results)} records.")
     except Exception as e:
         logger.error("Background task failed", exc_info=True)
         if conn:
@@ -219,14 +139,9 @@ def fetch_and_store_eod_data():
             conn.close()
 
 @app.post("/trigger-eod-fetch", dependencies=[Depends(get_api_key)])
-async def trigger_eod_fetch(
-    background_tasks: BackgroundTasks,
-):
-    try:
-        background_tasks.add_task(fetch_and_store_eod_data)
-        return {"message": "EOD data fetch has been triggered in the background."}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An internal error occurred: {e}")
+async def trigger_eod_fetch(background_tasks: BackgroundTasks):
+    background_tasks.add_task(fetch_and_store_eod_data)
+    return {"message": "EOD data fetch has been triggered in the background."}
 
 @app.get(
     "/stock/{symbol}",
@@ -246,7 +161,7 @@ async def get_latest_stock_price(symbol: str, conn: PgConnection = Depends(get_d
             ORDER BY date DESC
             LIMIT 1
             """,
-            (symbol.upper(),),  # Normalize symbol to uppercase
+            (symbol.upper(),),
         )
         record = cursor.fetchone()
 
@@ -254,3 +169,7 @@ async def get_latest_stock_price(symbol: str, conn: PgConnection = Depends(get_d
         raise HTTPException(status_code=404, detail=f"No stock price data found for symbol {symbol}")
 
     return StockPrice(**record)
+
+@app.get("/")
+async def health_check():
+    return {"status": "healthy"}

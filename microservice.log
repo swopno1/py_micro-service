@@ -1,2 +1,11 @@
 2025-08-26 00:00:43,656 - api.main - INFO - Background task: Starting EOD data fetch.
 2025-08-26 00:00:44,026 - api.main - INFO - Background task: Successfully processed 1 records.
+2025-08-26 05:16:22,800 - api.main - INFO - Background task: Starting EOD data fetch.
+2025-08-26 05:16:23,050 - api.main - ERROR - Background task failed
+Traceback (most recent call last):
+  File "/app/api/main.py", line 109, in fetch_and_store_eod_data
+    symbol_ticker = res['price'].symbol
+                    ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'symbol'
+2025-08-26 05:20:09,996 - api.main - INFO - Background task: Starting EOD data fetch.
+2025-08-26 05:20:10,307 - api.main - INFO - Background task: Successfully processed and stored 2 price records.

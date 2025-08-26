@@ -88,26 +88,6 @@ def test_fetch_and_store_eod_data(MockTicker):
         "exchange": "NMS",
         "quoteType": "EQUITY",
         "currency": "USD",
-        "sector": "Technology",
-        "industry": "Consumer Electronics",
-        "marketCap": 2.7e12,
-        "dividendYield": 0.005,
-        "debtToEquity": 1.2,
-        "returnOnEquity": 0.5,
-        "website": "https://www.apple.com",
-        "country": "United States",
-        "longBusinessSummary": "An American multinational technology company.",
-        "logo_url": "https://logo.clearbit.com/apple.com",
-        "regularMarketPrice": 172.0,
-        "regularMarketChange": 1.0,
-        "regularMarketVolume": 98765432,
-        "trailingPE": 28.0,
-        "pegRatio": 1.5,
-        "priceToBook": 40.0,
-        "beta": 1.2,
-        "fiftyTwoWeekHigh": 180.0,
-        "fiftyTwoWeekLow": 120.0,
-        "recommendationKey": "buy",
     }
     # Create a mock for the history method
     mock_hist = MagicMock()
@@ -120,13 +100,6 @@ def test_fetch_and_store_eod_data(MockTicker):
         "Volume": 98765432,
     }
     mock_hist.index = [datetime(2023, 1, 1)]
-    mock_hist.to_dict.return_value = {
-        "Open": {0: 170.0},
-        "High": {0: 172.5},
-        "Low": {0: 169.5},
-        "Close": {0: 172.0},
-        "Volume": {0: 98765432},
-    }
     mock_ticker_instance.history.return_value = mock_hist
 
 
@@ -135,10 +108,8 @@ def test_fetch_and_store_eod_data(MockTicker):
     try:
         with conn.cursor() as cursor:
             # Clean up any previous test data
-            cursor.execute('DELETE FROM "StockPrice"')
-            cursor.execute('DELETE FROM "SymbolQuote"')
-            cursor.execute('DELETE FROM "SymbolsMeta"')
-            cursor.execute('DELETE FROM "SymbolsMaster"')
+            cursor.execute('DELETE FROM "StockPrice" WHERE symbol = %s', ("TESTTICKER",))
+            cursor.execute('DELETE FROM "SymbolsMaster" WHERE symbol = %s', ("TESTTICKER",))
             # Insert a test symbol
             cursor.execute(
                 """
@@ -150,35 +121,22 @@ def test_fetch_and_store_eod_data(MockTicker):
             conn.commit()
 
         # 3. Call the function
-        with patch("api.main.fetch_stock_data") as mock_fetch:
-             mock_fetch.return_value = fetch_stock_data("TESTTICKER")
-             fetch_and_store_eod_data()
+        fetch_and_store_eod_data()
 
 
         # 4. Assert that the data was inserted correctly
         with conn.cursor() as cursor:
-            cursor.execute('SELECT * FROM "SymbolsMeta" WHERE symbol = %s', ("TESTTICKER",))
-            meta_record = cursor.fetchone()
-            assert meta_record is not None
-            assert meta_record["sector"] == "Technology"
-
-            cursor.execute('SELECT * FROM "SymbolQuote" WHERE symbol = %s', ("TESTTICKER",))
-            quote_record = cursor.fetchone()
-            assert quote_record is not None
-            assert quote_record["price"] == 172.0
-
             cursor.execute('SELECT * FROM "StockPrice" WHERE symbol = %s', ("TESTTICKER",))
             price_record = cursor.fetchone()
             assert price_record is not None
             assert price_record["close"] == 172.0
+            assert price_record["volume"] == 98765432
 
     finally:
         # 5. Clean up the test data
         conn = next(get_db())
         with conn.cursor() as cursor:
             cursor.execute('DELETE FROM "StockPrice" WHERE symbol = %s', ("TESTTICKER",))
-            cursor.execute('DELETE FROM "SymbolQuote" WHERE symbol = %s', ("TESTTICKER",))
-            cursor.execute('DELETE FROM "SymbolsMeta" WHERE symbol = %s', ("TESTTICKER",))
             cursor.execute('DELETE FROM "SymbolsMaster" WHERE symbol = %s', ("TESTTICKER",))
             conn.commit()
         conn.close()
