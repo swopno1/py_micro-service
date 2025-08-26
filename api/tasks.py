@@ -24,11 +24,12 @@ def _get_stock_symbols():
         for line in lines:
             parts = line.split(',')
             if len(parts) >= 2:
+                # The data is from yfinance, so the source should be YAHOO
                 symbols.append({
                     "symbol": parts[0].strip(),
                     "name": parts[1].strip(),
                     "type": "stock",
-                    "source": "DATAHUB.IO"
+                    "source": "YAHOO"
                 })
         logger.info(f"Successfully fetched {len(symbols)} stock symbols.")
         return symbols
@@ -44,9 +45,10 @@ def _get_crypto_symbols():
     # TODO: Implement Coinbase /products endpoint logic
     # url = "https://api.exchange.coinbase.com/products"
     # For now, returning a sample list
+    # yfinance can fetch crypto data, so we can treat it as the same source for now.
     symbols = [
-        {"symbol": "BTC-USD", "name": "Bitcoin", "type": "crypto", "source": "COINBASE"},
-        {"symbol": "ETH-USD", "name": "Ethereum", "type": "crypto", "source": "COINBASE"},
+        {"symbol": "BTC-USD", "name": "Bitcoin", "type": "crypto", "source": "YAHOO"},
+        {"symbol": "ETH-USD", "name": "Ethereum", "type": "crypto", "source": "YAHOO"},
     ]
     logger.info(f"Successfully fetched {len(symbols)} crypto symbols.")
     return symbols
