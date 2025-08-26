@@ -20,7 +20,7 @@ def _perform_with_retries(api_call, symbol: str) -> Tuple[str, Any]:
                  # Handles cases where yfinance returns None or empty DataFrame
                 logger.warning(f"No data returned for {symbol} on attempt {attempt + 1}.")
                 # We don't retry on empty data, we consider it a final state.
-                return 'delisted', None
+                return 'no_data', None
             return 'ok', result
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 429:
@@ -48,8 +48,8 @@ def get_ticker_info(symbol: str) -> Tuple[str, Optional[Dict[str, Any]]]:
         return status, None
 
     if not info or info.get('trailingPegRatio') is None:
-        logger.warning(f"Incomplete data for {symbol}. Marking as delisted.")
-        return 'delisted', None
+        logger.warning(f"Incomplete data for {symbol}.")
+        return 'no_data', None
 
     return 'ok', info
 

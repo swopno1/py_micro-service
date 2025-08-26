@@ -1,5 +1,6 @@
 import logging
 import requests
+import time
 import concurrent.futures
 from cuid2 import Cuid
 from psycopg2.extras import execute_values
@@ -137,7 +138,21 @@ def _process_task(task_name, fetch_function, write_function, limit=None):
 
     valid_results = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-        results = list(executor.map(fetch_function, symbols_list))
+        future_to_symbol = {}
+        for symbol in symbols_list:
+            future_to_symbol[executor.submit(fetch_function, symbol)] = symbol
+            time.sleep(0.05)
+
+        results_map = {}
+        for future in concurrent.futures.as_completed(future_to_symbol):
+            symbol = future_to_symbol[future]
+            try:
+                results_map[symbol] = future.result()
+            except Exception as exc:
+                logger.error(f'{symbol} generated an exception: {exc}')
+                results_map[symbol] = ('fetch_failed', None)
+
+    results = [results_map[symbol] for symbol in symbols_list]
 
     for i, (status, data) in enumerate(results):
         symbol = symbols_list[i]
@@ -148,6 +163,9 @@ def _process_task(task_name, fetch_function, write_function, limit=None):
             symbol_map[symbol]['failedAttempts'] += 1
             if symbol_map[symbol]['failedAttempts'] >= FAILURE_THRESHOLD:
                 symbol_map[symbol]['status'] = 'suspended'
+        elif status == 'no_data':
+            logger.warning(f"No data received from yfinance for symbol {symbol}. Keeping symbol as active.")
+            pass
 
     if not valid_results and all(v['status'] == 'ok' for v in symbol_map.values()):
         logger.info(f"No data fetched and no status changes for {task_name}.")
