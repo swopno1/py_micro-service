@@ -1,6 +1,6 @@
 import logging
 import requests
-import time
+import concurrent.futures
 from cuid2 import Cuid
 from psycopg2.extras import execute_values
 from .database import get_db_connection
@@ -122,13 +122,10 @@ def update_symbols_meta():
 
         logger.info(f"Found {len(symbols)} symbols to update meta for.")
 
-        valid_results = []
-        for symbol in symbols:
-            result = fetch_symbol_meta(symbol)
-            if result:
-                valid_results.append(result)
-            time.sleep(0.1) # 100ms delay to avoid rate limiting
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            results = list(executor.map(fetch_symbol_meta, symbols))
 
+        valid_results = [res for res in results if res]
         if not valid_results:
             logger.info("No new meta data fetched. Aborting update task.")
             return
@@ -178,13 +175,10 @@ def update_symbol_quotes():
 
         logger.info(f"Found {len(symbols)} symbols to update quotes for.")
 
-        valid_results = []
-        for symbol in symbols:
-            result = fetch_symbol_quote(symbol)
-            if result:
-                valid_results.append(result)
-            time.sleep(0.1) # 100ms delay
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            results = list(executor.map(fetch_symbol_quote, symbols))
 
+        valid_results = [res for res in results if res]
         if not valid_results:
             logger.info("No new quote data fetched. Aborting update task.")
             return
@@ -232,12 +226,10 @@ def update_stock_prices():
 
         logger.info(f"Found {len(symbols)} symbols to update stock prices for.")
 
-        all_price_records = []
-        for symbol in symbols:
-            results = fetch_stock_price_history(symbol)
-            if results:
-                all_price_records.extend(results)
-            time.sleep(0.1) # 100ms delay
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            results = list(executor.map(fetch_stock_price_history, symbols))
+
+        all_price_records = [record for sublist in results if sublist for record in sublist]
 
         if not all_price_records:
             logger.info("No new price data fetched. Aborting update task.")
