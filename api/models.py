@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Any, Optional
+from typing import Any, Optional, List
 
 from pydantic import BaseModel, validator
 
@@ -80,3 +80,9 @@ class StockPrice(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UpdatedSymbolData(BaseModel):
+    meta: Optional[SymbolsMeta] = None
+    quote: Optional[SymbolQuote] = None
+    price_history: List[StockPrice] = []

@@ -18,8 +18,14 @@ from .fetcher import (
     fetch_symbol_quote,
     fetch_stock_price_history,
 )
-from .models import StockPrice, SymbolsMaster, SymbolsMeta, SymbolQuote
-from .tasks import update_symbols_master, update_symbols_meta, update_symbol_quotes, update_stock_prices
+from .models import StockPrice, SymbolsMaster, SymbolsMeta, SymbolQuote, UpdatedSymbolData
+from .tasks import (
+    update_symbols_master,
+    update_symbols_meta,
+    update_symbol_quotes,
+    update_stock_prices,
+    update_symbol_from_external_source,
+)
 from cuid2 import Cuid
 
 # 1. Set up logging
@@ -58,7 +64,7 @@ async def lifespan(app: FastAPI):
         day=1,
         hour=10,
         minute=0,
-        timezone="utc",
+        timezone="UTC",
         id="update_symbols_master_job",
         replace_existing=True,
     )
@@ -70,7 +76,7 @@ async def lifespan(app: FastAPI):
         day=2,
         hour=10,
         minute=0,
-        timezone="utc",
+        timezone="UTC",
         id="update_symbols_meta_job",
         replace_existing=True,
     )
@@ -82,7 +88,7 @@ async def lifespan(app: FastAPI):
         day_of_week="mon-fri",
         hour=22,
         minute=0,
-        timezone="utc",
+        timezone="UTC",
         id="update_symbol_quotes_job",
         replace_existing=True,
     )
@@ -94,7 +100,7 @@ async def lifespan(app: FastAPI):
         day_of_week="mon-fri",
         hour=23,
         minute=0,
-        timezone="utc",
+        timezone="UTC",
         id="update_stock_prices_job",
         replace_existing=True,
     )
@@ -233,6 +239,23 @@ async def get_stock_price_history(
 
     colnames = [desc[0] for desc in cursor.description]
     return [StockPrice(**dict(zip(colnames, record))) for record in records]
+
+
+@symbols_router.post(
+    "/external/{symbol}",
+    response_model=UpdatedSymbolData,
+    dependencies=[Depends(get_api_key)],
+)
+async def update_symbol_from_source(symbol: str, conn: PgConnection = Depends(get_db)):
+    """
+    Fetches the latest data for a symbol from an external source,
+    updates the database, and returns the updated data.
+    """
+    updated_data = await update_symbol_from_external_source(symbol, conn)
+    if not updated_data["meta"] and not updated_data["quote"] and not updated_data["price_history"]:
+        raise HTTPException(status_code=404, detail=f"Could not fetch or update data for symbol {symbol}")
+    return updated_data
+
 
 app.include_router(symbols_router)
 

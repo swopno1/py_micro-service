@@ -220,5 +220,112 @@ def update_stock_prices():
         logger.info(f"Queued insert for {len(data_tuples)} price records.")
     _process_task("StockPrice", fetch_stock_price_history, write_prices, limit=500)
 
+async def update_symbol_from_external_source(symbol: str, conn):
+    """
+    Fetches and updates data for a single symbol from an external source
+    and returns the updated data.
+    """
+    import asyncio
+    import concurrent.futures
+    from .fetcher import fetch_symbol_meta, fetch_symbol_quote, fetch_stock_price_history
+    from .models import SymbolsMeta, SymbolQuote, StockPrice
+
+    loop = asyncio.get_event_loop()
+    updated_data = {"meta": None, "quote": None, "price_history": []}
+
+    with concurrent.futures.ThreadPoolExecutor() as pool:
+        # Fetch data in parallel
+        meta_future = loop.run_in_executor(pool, fetch_symbol_meta, symbol)
+        quote_future = loop.run_in_executor(pool, fetch_symbol_quote, symbol)
+        price_future = loop.run_in_executor(pool, fetch_stock_price_history, symbol)
+
+        meta_status, meta_data = await meta_future
+        quote_status, quote_data = await quote_future
+        price_status, price_data = await price_future
+
+    try:
+        was_anything_updated = False
+        with conn.cursor() as cursor:
+            # Upsert meta data
+            if meta_status == 'ok' and meta_data:
+                was_anything_updated = True
+                meta_tuple = (
+                    cuid_generator.generate(), meta_data['symbol'], meta_data['sector'], meta_data['industry'],
+                    meta_data['marketCap'], meta_data['dividendYield'], meta_data['debtEq'], meta_data['rOE'],
+                    meta_data['website'], meta_data['country'], meta_data['description'], meta_data['logo'],
+                    meta_data['source'], meta_data['lastUpdated']
+                )
+                meta_query = """
+                    INSERT INTO "SymbolsMeta" (id, symbol, sector, industry, "marketCap", "dividendYield", "debtEq", "rOE", website, country, description, logo, source, "lastUpdated")
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (symbol) DO UPDATE SET
+                        sector = EXCLUDED.sector, industry = EXCLUDED.industry, "marketCap" = EXCLUDED."marketCap",
+                        "dividendYield" = EXCLUDED."dividendYield", "debtEq" = EXCLUDED."debtEq", "rOE" = EXCLUDED."rOE",
+                        website = EXCLUDED.website, country = EXCLUDED.country, description = EXCLUDED.description,
+                        logo = EXCLUDED.logo, source = EXCLUDED.source, "lastUpdated" = EXCLUDED."lastUpdated"
+                    RETURNING *;
+                """
+                cursor.execute(meta_query, meta_tuple)
+                record = cursor.fetchone()
+                if record:
+                    colnames = [desc[0] for desc in cursor.description]
+                    updated_data["meta"] = SymbolsMeta(**dict(zip(colnames, record)))
+
+            # Upsert quote data
+            if quote_status == 'ok' and quote_data:
+                was_anything_updated = True
+                quote_tuple = (
+                    cuid_generator.generate(), quote_data['symbol'], quote_data['price'], quote_data['change'],
+                    quote_data['volume'], quote_data['pE'], quote_data['pEG'], quote_data['pB'], quote_data['beta'],
+                    quote_data['w52High'], quote_data['w52Low'], quote_data['recommendation'], quote_data['lastUpdated']
+                )
+                quote_query = """
+                    INSERT INTO "SymbolQuote" (id, symbol, price, change, volume, "pE", "pEG", "pB", beta, "w52High", "w52Low", recommendation, "lastUpdated")
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (symbol) DO UPDATE SET
+                        price = EXCLUDED.price, change = EXCLUDED.change, volume = EXCLUDED.volume, "pE" = EXCLUDED."pE",
+                        "pEG" = EXCLUDED."pEG", "pB" = EXCLUDED."pB", beta = EXCLUDED.beta, "w52High" = EXCLUDED."w52High",
+                        "w52Low" = EXCLUDED."w52Low", recommendation = EXCLUDED.recommendation, "lastUpdated" = EXCLUDED."lastUpdated"
+                    RETURNING *;
+                """
+                cursor.execute(quote_query, quote_tuple)
+                record = cursor.fetchone()
+                if record:
+                    colnames = [desc[0] for desc in cursor.description]
+                    updated_data["quote"] = SymbolQuote(**dict(zip(colnames, record)))
+
+            # Insert stock price data
+            if price_status == 'ok' and price_data:
+                price_tuples = [
+                    (cuid_generator.generate(), r['symbol'], r['date'], r['open'], r['high'], r['low'], r['close'], r['volume'])
+                    for r in price_data
+                ]
+                if price_tuples:
+                    was_anything_updated = True
+                    price_query = 'INSERT INTO "StockPrice" (id, symbol, date, open, high, low, close, volume) VALUES %s ON CONFLICT (symbol, date) DO NOTHING RETURNING symbol, date, open, high, low, close, volume;'
+                    execute_values(cursor, price_query, price_tuples, fetch=True)
+                    records = cursor.fetchall()
+                    colnames = [desc[0] for desc in cursor.description]
+                    updated_data["price_history"] = [StockPrice(**dict(zip(colnames, r))) for r in records]
+
+        conn.commit()
+        if was_anything_updated:
+            logger.info(f"Successfully updated data for symbol {symbol}.")
+        else:
+            logger.warning(
+                f"No new data was fetched or updated for symbol {symbol}. "
+                f"Fetch status: meta='{meta_status}', quote='{quote_status}', price='{price_status}'."
+            )
+
+    except Exception as e:
+        logger.error(f"Failed to update data for symbol {symbol}.", exc_info=True)
+        if conn:
+            conn.rollback()
+        # Reraise the exception to be handled by the endpoint
+        raise
+
+    return updated_data
+
+
 if __name__ == '__main__':
     update_symbols_master()
