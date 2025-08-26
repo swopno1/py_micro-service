@@ -1,8 +1,10 @@
-fastapi==0.104.1
-uvicorn==0.24.0
+fastapi==0.95.1
+uvicorn==0.22.0
 psycopg2-binary==2.9.9
 yfinance==0.2.28
 python-dotenv==1.0.0
 pytest
-httpx
+httpx==0.23.0
 apscheduler
+beautifulsoup4
+cuid2
