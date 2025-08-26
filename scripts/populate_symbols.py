@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import logging
 from cuid2 import Cuid
+import psycopg2
 
 # Add the parent directory to the sys.path to allow imports from the 'api' module
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -55,6 +56,7 @@ def populate_symbols_master(symbols):
     conn = None
     try:
         conn = get_db_connection()
+        conn.autocommit = True  # Enable autocommit to avoid long-running transactions
         with conn.cursor() as cursor:
             for stock in symbols:
                 try:
@@ -65,11 +67,12 @@ def populate_symbols_master(symbols):
                     """
                     cursor.execute(insert_query, (cuid_generator.generate(), stock['symbol'], stock['name']))
                     logger.info(f"Inserted/updated symbol: {stock['symbol']}")
+                except (psycopg2.InterfaceError, psycopg2.OperationalError) as e:
+                    logger.error(f"Database connection error: {e}. Stopping this batch.")
+                    break  # Exit loop if connection is lost
                 except Exception as e:
                     logger.error(f"Error inserting symbol {stock['symbol']}: {e}")
-                    conn.rollback() # Rollback on error for a specific symbol
-            conn.commit()
-            logger.info("Successfully populated SymbolsMaster table.")
+        logger.info("Finished processing symbols for this batch.")
     except Exception as e:
         logger.error(f"Database operation failed: {e}")
     finally:
