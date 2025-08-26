@@ -226,9 +226,11 @@ async def update_symbol_from_external_source(symbol: str, conn):
         price_status, price_data = await price_future
 
     try:
+        was_anything_updated = False
         with conn.cursor() as cursor:
             # Upsert meta data
             if meta_status == 'ok' and meta_data:
+                was_anything_updated = True
                 meta_tuple = (
                     cuid_generator.generate(), meta_data['symbol'], meta_data['sector'], meta_data['industry'],
                     meta_data['marketCap'], meta_data['dividendYield'], meta_data['debtEq'], meta_data['rOE'],
@@ -253,6 +255,7 @@ async def update_symbol_from_external_source(symbol: str, conn):
 
             # Upsert quote data
             if quote_status == 'ok' and quote_data:
+                was_anything_updated = True
                 quote_tuple = (
                     cuid_generator.generate(), quote_data['symbol'], quote_data['price'], quote_data['change'],
                     quote_data['volume'], quote_data['pE'], quote_data['pEG'], quote_data['pB'], quote_data['beta'],
@@ -280,6 +283,7 @@ async def update_symbol_from_external_source(symbol: str, conn):
                     for r in price_data
                 ]
                 if price_tuples:
+                    was_anything_updated = True
                     price_query = 'INSERT INTO "StockPrice" (id, symbol, date, open, high, low, close, volume) VALUES %s ON CONFLICT (symbol, date) DO NOTHING RETURNING symbol, date, open, high, low, close, volume;'
                     execute_values(cursor, price_query, price_tuples, fetch=True)
                     records = cursor.fetchall()
@@ -287,7 +291,13 @@ async def update_symbol_from_external_source(symbol: str, conn):
                     updated_data["price_history"] = [StockPrice(**dict(zip(colnames, r))) for r in records]
 
         conn.commit()
-        logger.info(f"Successfully updated data for symbol {symbol}.")
+        if was_anything_updated:
+            logger.info(f"Successfully updated data for symbol {symbol}.")
+        else:
+            logger.warning(
+                f"No new data was fetched or updated for symbol {symbol}. "
+                f"Fetch status: meta='{meta_status}', quote='{quote_status}', price='{price_status}'."
+            )
 
     except Exception as e:
         logger.error(f"Failed to update data for symbol {symbol}.", exc_info=True)
