@@ -34,6 +34,14 @@ def _perform_with_retries(api_call, symbol: str) -> Tuple[str, Any]:
             else:
                 logger.error(f"HTTP Error for {symbol}: {e}", exc_info=True)
                 return 'fetch_failed', None
+        except finnhub.exceptions.FinnhubAPIException as e:
+            if e.status_code == 429:
+                wait_time = BACKOFF_FACTOR * (2 ** attempt)
+                logger.warning(f"Rate limited on {symbol} by Finnhub. Retrying in {wait_time}s...")
+                time.sleep(wait_time)
+            else:
+                logger.error(f"Finnhub API Error for {symbol}: {e}", exc_info=True)
+                return 'fetch_failed', None
         except Exception as e:
             logger.error(f"Unexpected error for {symbol}: {e}", exc_info=True)
             return 'fetch_failed', None
@@ -137,7 +145,7 @@ class FinnhubSource(DataSource):
             return 'fetch_failed', None
 
         status, profile = _perform_with_retries(lambda: self.client.company_profile2(symbol=symbol), symbol)
-        if status != 'ok' or not profile:
+        if status != 'ok':
             return status, None
 
         data = {
@@ -162,7 +170,7 @@ class FinnhubSource(DataSource):
             return 'fetch_failed', None
 
         status, quote = _perform_with_retries(lambda: self.client.quote(symbol=symbol), symbol)
-        if status != 'ok' or not quote or quote.get('c') == 0:
+        if status != 'ok' or quote.get('c') == 0:
             return 'no_data', None
 
         data = {
@@ -197,7 +205,7 @@ class FinnhubSource(DataSource):
             symbol
         )
 
-        if status != 'ok' or not hist or hist.get('s') != 'ok':
+        if status != 'ok' or hist.get('s') != 'ok':
             return status if status != 'ok' else 'no_data', []
 
         records = []
