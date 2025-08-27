@@ -7,7 +7,9 @@ from datetime import date, datetime
 # Set environment variables for testing
 os.environ["TESTING"] = "true"
 os.environ["API_KEY"] = "test-key"
-
+os.environ["DATABASE_URL"] = "postgresql://test:test@localhost:5432/testdb"
+from api.main import app, get_db
+from api.models import SymbolsMeta, SymbolQuote, StockPrice
 
 from api.models import SymbolsMeta, SymbolQuote, StockPrice
 
@@ -173,6 +175,7 @@ MOCK_UPDATED_DATA = {
     "price_history": [StockPrice(**MOCK_PRICE_DATA)],
 }
 
+
 @patch("api.main.update_symbol_from_external_source", new_callable=MagicMock)
 def test_update_symbol_from_source_success(mock_update, client, headers):
     """Test successful update of a symbol from an external source."""
@@ -195,7 +198,9 @@ def test_update_symbol_from_source_success(mock_update, client, headers):
 
 
 @patch("api.main.update_symbol_from_external_source")
+
 def test_update_symbol_from_source_not_found(mock_update, client, headers):
+
     """Test 404 when updating a symbol that cannot be found."""
     async def async_mock_update(*args, **kwargs):
         return {"meta": None, "quote": None, "price_history": []}
