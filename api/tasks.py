@@ -5,7 +5,7 @@ import concurrent.futures
 from cuid2 import Cuid
 from psycopg2.extras import execute_values
 from .database import get_db_connection
-from .fetcher import fetch_symbol_meta, fetch_symbol_quote, fetch_stock_price_history
+from .fetcher import fetch_symbol_meta, fetch_symbols_meta_batch, fetch_symbol_quote, fetch_stock_price_history
 
 logger = logging.getLogger(__name__)
 cuid_generator = Cuid()
@@ -124,7 +124,7 @@ def update_symbols_master():
     finally:
         if conn: conn.close()
 
-def _process_task(task_name, fetch_function, write_function, limit=None):
+def _process_task(task_name, fetch_function, write_function, limit=None, use_batching=False, batch_size=100):
     """Generic function to handle the fetch-process-write cycle for tasks."""
     logger.info(f"Starting {task_name} task.")
     symbols_data = _fetch_active_symbols_with_attempts(limit=limit)
@@ -135,24 +135,31 @@ def _process_task(task_name, fetch_function, write_function, limit=None):
 
     symbol_map = {s['symbol']: s for s in symbols_data}
     symbols_list = list(symbol_map.keys())
-
     valid_results = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-        future_to_symbol = {}
-        for symbol in symbols_list:
-            future_to_symbol[executor.submit(fetch_function, symbol)] = symbol
-            time.sleep(0.05)
+    results = []
 
-        results_map = {}
-        for future in concurrent.futures.as_completed(future_to_symbol):
-            symbol = future_to_symbol[future]
-            try:
-                results_map[symbol] = future.result()
-            except Exception as exc:
-                logger.error(f'{symbol} generated an exception: {exc}')
-                results_map[symbol] = ('fetch_failed', None)
+    if use_batching:
+        # Batch processing logic
+        for i in range(0, len(symbols_list), batch_size):
+            batch_symbols = symbols_list[i:i + batch_size]
+            logger.info(f"Processing batch of {len(batch_symbols)} symbols for {task_name}.")
+            batch_results = fetch_symbols_meta_batch(batch_symbols)
+            results.extend(batch_results)
+            time.sleep(1) # Sleep between batches to avoid rate limiting
+    else:
+        # Original single-threaded fetching
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            future_to_symbol = {executor.submit(fetch_function, symbol): symbol for symbol in symbols_list}
+            results_map = {}
+            for future in concurrent.futures.as_completed(future_to_symbol):
+                symbol = future_to_symbol[future]
+                try:
+                    results_map[symbol] = future.result()
+                except Exception as exc:
+                    logger.error(f'{symbol} generated an exception: {exc}')
+                    results_map[symbol] = ('fetch_failed', None)
+            results = [results_map[symbol] for symbol in symbols_list]
 
-    results = [results_map[symbol] for symbol in symbols_list]
 
     for i, (status, data) in enumerate(results):
         symbol = symbols_list[i]
@@ -164,7 +171,7 @@ def _process_task(task_name, fetch_function, write_function, limit=None):
             if symbol_map[symbol]['failedAttempts'] >= FAILURE_THRESHOLD:
                 symbol_map[symbol]['status'] = 'suspended'
         elif status == 'no_data':
-            logger.warning(f"No data received from yfinance for symbol {symbol}. Keeping symbol as active.")
+            logger.warning(f"No data received for symbol {symbol}. Keeping symbol as active.")
             pass
 
     if not valid_results and all(v['status'] == 'ok' for v in symbol_map.values()):
@@ -196,7 +203,7 @@ def update_symbols_meta():
         """
         execute_values(cursor, insert_query, data_tuples)
         logger.info(f"Queued upsert for {len(results)} meta records.")
-    _process_task("SymbolsMeta", fetch_symbol_meta, write_meta)
+    _process_task("SymbolsMeta", fetch_symbol_meta, write_meta, use_batching=True)
 
 def update_symbol_quotes():
     def write_quotes(cursor, results):
