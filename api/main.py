@@ -1,12 +1,10 @@
 import asyncio
 import os
 import logging
-from contextlib import asynccontextmanager
 from logging.handlers import RotatingFileHandler
 import concurrent.futures
 from datetime import date
 from typing import List, Optional
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import APIRouter, FastAPI, Depends, HTTPException, BackgroundTasks, Security, Query
 from psycopg2.extras import execute_values
 from psycopg2.extensions import connection as PgConnection
@@ -51,65 +49,7 @@ root_logger.setLevel(logging.INFO)
 # Get a logger for this specific module
 logger = logging.getLogger(__name__)
 
-# Create a scheduler instance
-scheduler = AsyncIOScheduler()
 cuid_generator = Cuid()
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Schedule the SymbolsMaster update job to run on the 1st day of every month.
-    scheduler.add_job(
-        update_symbols_master,
-        "cron",
-        day=1,
-        hour=10,
-        minute=0,
-        timezone="UTC",
-        id="update_symbols_master_job",
-        replace_existing=True,
-    )
-
-    # Schedule the SymbolsMeta update job to run on the 2nd day of every month.
-    scheduler.add_job(
-        update_symbols_meta,
-        "cron",
-        day=2,
-        hour=10,
-        minute=0,
-        timezone="UTC",
-        id="update_symbols_meta_job",
-        replace_existing=True,
-    )
-
-    # Schedule the SymbolQuote update job to run every weekday at 22:00 UTC.
-    scheduler.add_job(
-        update_symbol_quotes,
-        "cron",
-        day_of_week="mon-fri",
-        hour=22,
-        minute=0,
-        timezone="UTC",
-        id="update_symbol_quotes_job",
-        replace_existing=True,
-    )
-
-    # Schedule the StockPrice update job to run every weekday at 23:00 UTC
-    scheduler.add_job(
-        update_stock_prices,
-        "cron",
-        day_of_week="mon-fri",
-        hour=23,
-        minute=0,
-        timezone="UTC",
-        id="update_stock_prices_job",
-        replace_existing=True,
-    )
-
-    scheduler.start()
-    logger.info("Scheduler started. Jobs are scheduled.")
-    yield
-    scheduler.shutdown()
-    logger.info("Scheduler shut down.")
 
 
 API_KEY = os.getenv("API_KEY")
@@ -117,7 +57,7 @@ API_KEY_NAME = "X-API-Key"
 
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 async def get_api_key(key: str = Security(api_key_header)):
     if not API_KEY:

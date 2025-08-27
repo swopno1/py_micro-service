@@ -215,7 +215,7 @@ def update_symbol_quotes():
         """
         execute_values(cursor, insert_query, data_tuples)
         logger.info(f"Queued upsert for {len(results)} quote records.")
-    _process_task("SymbolQuote", fetch_symbol_quote, write_quotes, limit=500)
+    _process_task("SymbolQuote", fetch_symbol_quote, write_quotes, limit=1000)
 
 def update_stock_prices():
     def write_prices(cursor, results):
@@ -225,7 +225,7 @@ def update_stock_prices():
         insert_query = 'INSERT INTO "StockPrice" (id, symbol, date, open, high, low, close, volume) VALUES %s ON CONFLICT (symbol, date) DO NOTHING;'
         execute_values(cursor, insert_query, data_tuples)
         logger.info(f"Queued insert for {len(data_tuples)} price records.")
-    _process_task("StockPrice", fetch_stock_price_history, write_prices, limit=500)
+    _process_task("StockPrice", fetch_stock_price_history, write_prices, limit=1000)
 
 async def update_symbol_from_external_source(symbol: str, conn):
     """
@@ -335,4 +335,24 @@ async def update_symbol_from_external_source(symbol: str, conn):
 
 
 if __name__ == '__main__':
-    update_symbols_master()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run data update tasks.")
+    parser.add_argument(
+        "--task",
+        type=str,
+        choices=["quotes", "prices", "all"],
+        required=True,
+        help="The task to run: 'quotes' for SymbolQuote, 'prices' for StockPrice, or 'all' for both."
+    )
+    args = parser.parse_args()
+
+    logger.info(f"Manual task execution started for: {args.task}")
+
+    if args.task == "quotes" or args.task == "all":
+        update_symbol_quotes()
+
+    if args.task == "prices" or args.task == "all":
+        update_stock_prices()
+
+    logger.info("Manual task execution finished.")

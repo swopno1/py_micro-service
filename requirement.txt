@@ -5,7 +5,7 @@ yfinance==0.2.28
 python-dotenv==1.0.0
 pytest
 httpx
-apscheduler
+gunicorn
 beautifulsoup4
 cuid2
 finnhub-python==2.4.20
