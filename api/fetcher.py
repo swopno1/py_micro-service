@@ -70,6 +70,55 @@ def fetch_symbol_meta(symbol: str) -> Tuple[str, Optional[Dict[str, Any]]]:
     }
     return 'ok', data
 
+def fetch_symbols_meta_batch(symbols: List[str]) -> List[Tuple[str, Optional[Dict[str, Any]]]]:
+    """Fetches fundamental metadata for a batch of symbols."""
+    results = []
+    try:
+        tickers = yf.Tickers(' '.join(symbols))
+        for symbol in symbols:
+            try:
+                info = tickers.tickers[symbol.upper()].info
+                if not info or info.get('trailingPegRatio') is None:
+                    logger.warning(f"Incomplete data for {symbol}.")
+                    results.append(('no_data', None))
+                    continue
+
+                data = {
+                    "symbol": symbol.upper(),
+                    "sector": info.get("sector"),
+                    "industry": info.get("industry"),
+                    "marketCap": info.get("marketCap"),
+                    "dividendYield": info.get("dividendYield"),
+                    "debtEq": info.get("debtToEquity"),
+                    "rOE": info.get("returnOnEquity"),
+                    "website": info.get("website"),
+                    "country": info.get("country"),
+                    "description": info.get("longBusinessSummary"),
+                    "logo": info.get("logo_url"),
+                    "source": "YAHOO",
+                    "lastUpdated": datetime.utcnow(),
+                }
+                results.append(('ok', data))
+
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 404:
+                    logger.warning(f"404 Not Found for {symbol}. Marking as delisted.")
+                    results.append(('delisted', None))
+                else:
+                    logger.error(f"HTTP Error for {symbol}: {e}", exc_info=True)
+                    results.append(('fetch_failed', None))
+            except Exception:
+                # This catches other errors like missing 'info'
+                logger.warning(f"Could not retrieve info for {symbol}. It might be delisted or invalid.")
+                results.append(('delisted', None))
+
+    except Exception as e:
+        logger.error(f"Batch fetch failed for symbols: {symbols}. Error: {e}", exc_info=True)
+        # If the whole batch fails, mark all as failed
+        return [('fetch_failed', None)] * len(symbols)
+
+    return results
+
 def fetch_symbol_quote(symbol: str) -> Tuple[str, Optional[Dict[str, Any]]]:
     """Fetches the latest quote data for a given symbol."""
     status, info = get_ticker_info(symbol)
