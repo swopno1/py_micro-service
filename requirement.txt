@@ -9,3 +9,4 @@ apscheduler
 beautifulsoup4
 cuid2
 finnhub-python==2.4.20
+alpha-vantage==2.3.1

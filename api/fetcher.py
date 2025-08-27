@@ -4,6 +4,8 @@ import time
 import requests
 import finnhub
 import os
+from alpha_vantage.timeseries import TimeSeries
+from alpha_vantage.fundamentaldata import FundamentalData
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List, Tuple
 from abc import ABC, abstractmethod
@@ -41,6 +43,14 @@ def _perform_with_retries(api_call, symbol: str) -> Tuple[str, Any]:
                 time.sleep(wait_time)
             else:
                 logger.error(f"Finnhub API Error for {symbol}: {e}", exc_info=True)
+                return 'fetch_failed', None
+        except ValueError as e:
+            if "call frequency" in str(e):
+                wait_time = BACKOFF_FACTOR * (2 ** attempt)
+                logger.warning(f"Rate limited on {symbol} by Alpha Vantage. Retrying in {wait_time}s...")
+                time.sleep(wait_time)
+            else:
+                logger.error(f"Alpha Vantage Value Error for {symbol}: {e}", exc_info=True)
                 return 'fetch_failed', None
         except Exception as e:
             logger.error(f"Unexpected error for {symbol}: {e}", exc_info=True)
@@ -222,6 +232,119 @@ class FinnhubSource(DataSource):
 
         return 'ok', records
 
+# --- Alpha Vantage Implementation ---
+
+class AlphaVantageSource(DataSource):
+    """Data source for Alpha Vantage."""
+    def __init__(self, api_keys: Optional[List[str]] = None):
+        if api_keys:
+            self.api_keys = api_keys
+        else:
+            self.api_keys = [val for key, val in os.environ.items() if key.startswith("ALPHAVANTAGE") and val]
+
+        if not self.api_keys:
+            logger.warning("Alpha Vantage API keys not found. AlphaVantageSource will be disabled.")
+            self.clients = []
+        else:
+            self.clients = [
+                (TimeSeries(key=key, output_format='pandas'), FundamentalData(key=key, output_format='pandas'))
+                for key in self.api_keys
+            ]
+        self.current_client_index = 0
+
+    def _get_next_client(self):
+        """Rotates through the available Alpha Vantage clients."""
+        if not self.clients:
+            return None, None
+        client_pair = self.clients[self.current_client_index]
+        self.current_client_index = (self.current_client_index + 1) % len(self.clients)
+        return client_pair
+
+    def fetch_symbol_meta(self, symbol: str) -> Tuple[str, Optional[Dict[str, Any]]]:
+        ts_client, fd_client = self._get_next_client()
+        if not fd_client:
+            return 'fetch_failed', None
+
+        try:
+            status, overview = _perform_with_retries(lambda: fd_client.get_company_overview(symbol), symbol)
+            if status != 'ok' or overview.empty:
+                return 'no_data', None
+
+            profile = overview.iloc[0].to_dict()
+            data = {
+                "symbol": profile.get("Symbol", symbol).upper(),
+                "sector": profile.get("Sector"),
+                "industry": profile.get("Industry"),
+                "marketCap": float(profile.get("MarketCapitalization", 0)),
+                "dividendYield": float(profile.get("DividendYield", 0)),
+                "debtEq": float(profile.get("DebtToEquityRatio", 0)),
+                "rOE": float(profile.get("ReturnOnEquityTTM", 0)),
+                "website": None,
+                "country": profile.get("Country"),
+                "description": profile.get("Description"),
+                "logo": None,
+                "source": "ALPHAVANTAGE",
+                "lastUpdated": datetime.utcnow(),
+            }
+            return 'ok', data
+        except Exception as e:
+            logger.error(f"Alpha Vantage meta fetch failed for {symbol}: {e}", exc_info=True)
+            return 'fetch_failed', None
+
+    def fetch_symbol_quote(self, symbol: str) -> Tuple[str, Optional[Dict[str, Any]]]:
+        ts_client, _ = self._get_next_client()
+        if not ts_client:
+            return 'fetch_failed', None
+
+        try:
+            status, quote_data = _perform_with_retries(lambda: ts_client.get_quote_endpoint(symbol), symbol)
+            if status != 'ok' or quote_data.empty:
+                return 'no_data', None
+
+            quote = quote_data.iloc[0].to_dict()
+            data = {
+                "symbol": symbol.upper(),
+                "price": float(quote.get("05. price", 0)),
+                "change": float(quote.get("09. change", 0)),
+                "volume": int(quote.get("06. volume", 0)),
+                "pE": None, "pEG": None, "pB": None, "beta": None,
+                "w52High": None, "w52Low": None, "recommendation": None,
+                "lastUpdated": datetime.strptime(quote.get("07. latest trading day"), '%Y-%m-%d') if quote.get("07. latest trading day") else datetime.utcnow(),
+            }
+            return 'ok', data
+        except Exception as e:
+            logger.error(f"Alpha Vantage quote fetch failed for {symbol}: {e}", exc_info=True)
+            return 'fetch_failed', None
+
+    def fetch_stock_price_history(self, symbol: str, period: str = "1d") -> Tuple[str, List[Dict[str, Any]]]:
+        ts_client, _ = self._get_next_client()
+        if not ts_client:
+            return 'fetch_failed', None
+
+        try:
+            status, (data, _) = _perform_with_retries(lambda: ts_client.get_daily(symbol=symbol, outputsize='compact'), symbol)
+            if status != 'ok' or data.empty:
+                return 'no_data', []
+
+            data = data.reset_index()
+            records = [
+                {
+                    "symbol": symbol.upper(),
+                    "date": row["date"].date(),
+                    "open": row["1. open"],
+                    "high": row["2. high"],
+                    "low": row["3. low"],
+                    "close": row["4. close"],
+                    "volume": int(row["5. volume"]),
+                }
+                for _, row in data.iterrows()
+            ]
+            return 'ok', records
+        except Exception as e:
+            logger.error(f"Alpha Vantage price history fetch failed for {symbol}: {e}", exc_info=True)
+            return 'fetch_failed', None
+
+
 # --- Fetcher Manager ---
 
 class FetcherManager:
@@ -237,6 +360,11 @@ class FetcherManager:
         finnhub_source = FinnhubSource()
         if finnhub_source.client:
             self.sources.append(finnhub_source)
+
+        # Initialize and add Alpha Vantage source if API keys are available
+        alpha_vantage_source = AlphaVantageSource()
+        if alpha_vantage_source.clients:
+            self.sources.append(alpha_vantage_source)
 
         logger.info(f"FetcherManager initialized with {len(self.sources)} data source(s).")
 
